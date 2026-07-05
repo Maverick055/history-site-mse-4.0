@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script>
+        // Восстанавливаем сохранённую тему до первой отрисовки — без этого
+        // тема сбрасывалась при каждом переходе и страница «мигала» светлым.
+        (function () {
+            try {
+                var stored = localStorage.getItem('hist_theme');
+                if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (error) { /* приватный режим: остаёмся на светлой теме */ }
+        })();
+    </script>
+    <title>Исторический навигатор | Россия (1800-1920)</title>
+    <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+    <link rel="mask-icon" href="logo2-mono.svg" color="#211f4c">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef4ff',
+                            100: '#d7e5fe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Instrument Serif', 'Georgia', 'serif'],
+                        display: ['Instrument Serif', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(26, 54, 93, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(26, 54, 93, 0.4); }
+        .dark::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+    </style>
+    <link rel="stylesheet" href="./codex-premium-ui.css?v=20260705-r3">
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-200 dark:bg-slate-900 dark:text-slate-100">
+<div class="exposition-frame">
+  <span class="crop-mark crop-h crop-tl-h"></span><span class="crop-mark crop-v crop-tl-v"></span>
+  <span class="crop-mark crop-h crop-tr-h"></span><span class="crop-mark crop-v crop-tr-v"></span>
+  <span class="crop-mark crop-h crop-bl-h"></span><span class="crop-mark crop-v crop-bl-v"></span>
+  <span class="crop-mark crop-h crop-br-h"></span><span class="crop-mark crop-v crop-br-v"></span>
+
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Верхняя строка: логотип + действия -->
+            <div class="flex items-center gap-2 h-14">
+                <a href="./index.html" class="flex items-center gap-2 shrink-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900" aria-label="На главную страницу Исторического Навигатора">
+                    <img src="./logo.svg" alt="Логотип Исторического Навигатора" class="site-logo h-9 w-9 rounded-lg shadow-md shrink-0">
+                    <div class="hidden sm:block min-w-0">
+                        <h1 class="text-base font-bold tracking-tight text-indigo-950 dark:text-white leading-tight">Исторический Навигатор</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Россия 1800–1920</p>
+                    </div>
+                </a>
+                <!-- Поиск в шапке (только на десктопе) -->
+                <div class="hidden lg:flex relative flex-1 max-w-sm mx-2">
+                    <input type="search" id="global-search" oninput="handleSearch(this.value)" placeholder="Поиск по билетам, датам, терминам..." aria-label="Поиск" autocomplete="off" class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 border border-transparent rounded-full focus:bg-white focus:border-indigo-500 focus:outline-none dark:bg-slate-800 dark:text-white transition-all">
+                    <div class="absolute left-3 top-2.5 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 ml-auto shrink-0">
+                    <div class="hidden lg:flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Прогресс:</span>
+                        <div class="w-24 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                            <div id="read-progress-bar" class="bg-emerald-500 h-2 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="read-progress-text" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">0%</span>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-white focus:outline-none">
+                        <svg id="theme-icon-dark" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14.243 12a2.243 2.243 0 11-4.486 0 2.243 2.243 0 014.486 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Мобильная строка поиска (всегда видима на экранах < lg) -->
+            <div class="lg:hidden pb-2 relative">
+                <input type="search" id="mobile-header-search" oninput="handleSearch(this.value)" placeholder="Поиск по билетам, датам, терминам..." aria-label="Поиск по билетам, датам и терминам" autocomplete="off" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-100 border border-transparent rounded-full focus:bg-white focus:border-indigo-500 focus:outline-none dark:bg-slate-800 dark:text-white transition-all">
+                <div class="absolute left-3 top-2.5 text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+            <!-- Мобильный прогресс чтения -->
+            <div class="lg:hidden flex items-center gap-2 pb-3">
+                <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">Прогресс:</span>
+                <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                    <div id="read-progress-bar-m" class="bg-emerald-500 h-1.5 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="read-progress-text-m" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="section-plaque"><span class="plaque-num">§ 05</span><span>ЧТЕНИЕ · БИЛЕТЫ 1–16</span><span class="plaque-tail">РОССИЯ · 1800–1920</span></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <aside class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                <!-- Переключатель режимов -->
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Режим работы</p>
+                    <button onclick="switchMode('read')" id="btn-mode-read" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <span>Учебник</span>
+                    </button>
+                    <button onclick="switchMode('cards')" id="btn-mode-cards" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <span>Карточки</span>
+                    </button>
+                    <button onclick="switchMode('quiz')" id="btn-mode-quiz" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Проверить себя (Тест)</span>
+                    </button>
+                </div>
+
+                <!-- Содержание -->
+                <div id="sidebar-toc" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Содержание</p>
+                    <nav id="toc-container" class="space-y-3 text-sm">
+                        <!-- Динамическое содержание -->
+                    </nav>
+                </div>
+
+                <!-- Закладки -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Избранные разделы</p>
+                    <div id="bookmarks-container" class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                        <!-- Динамические закладки -->
+                    </div>
+                </div>
+            </aside>
+
+            <main class="lg:col-span-3 space-y-6">
+                <!-- ОКНО РЕЖИМА ЧТЕНИЯ -->
+                <section id="view-read" class="space-y-8">
+                    <div id="read-header" class="border-b-2 border-indigo-900 pb-3 mb-6">
+                        <span id="header-category" class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Категория</span>
+                        <h2 id="header-title" class="text-3xl font-serif font-semibold text-slate-900 dark:text-white">Выберите тему</h2>
+                    </div>
+                    
+                    <article id="article-body" class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 relative transition-all">
+                        <!-- Контент статьи -->
+                        <div class="text-center py-10 text-slate-500">Пожалуйста, выберите билет из меню слева.</div>
+                    </article>
+                </section>
+
+                <!-- ОКНО РЕЖИМА КАРТОЧЕК -->
+                <section id="view-cards" class="hidden space-y-6">
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">Интерактивные карточки</h2>
+                        <p class="text-xs text-slate-500">Повторяйте даты, личности, реформы, события и термины.</p>
+                        <div id="card-type-filters" class="mt-4 flex flex-wrap gap-2"></div>
+                        <input id="card-search" type="search" placeholder="Поиск по карточкам" autocomplete="off" class="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                        <div id="card-summary" class="mt-3 text-xs font-bold uppercase tracking-wider text-slate-400"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="cards-container"></div>
+                </section>
+
+                <!-- ОКНО РЕЖИМА ТЕСТОВ -->
+                <section id="view-quiz" class="hidden space-y-6">
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">Проверить свои знания</h2>
+                        <p class="text-xs text-slate-500">Интерактивный тест по истории России (1800-1920). Попробуйте набрать 100%!</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <span id="quiz-question-number" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Вопрос 1</span>
+                            <span id="quiz-score" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Правильно: 0 / 0</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-indigo-600 h-1.5 transition-all" style="width: 10%"></div>
+                        </div>
+                        <h3 id="quiz-question-text" class="text-lg font-semibold text-slate-900 dark:text-white">Текст вопроса...</h3>
+                        <div id="quiz-answers-container" class="grid grid-cols-1 gap-3"></div>
+                        <div id="quiz-feedback" class="hidden p-4 rounded-xl border"></div>
+                        <div class="flex justify-end">
+                            <button id="btn-next-question" onclick="nextQuestion()" class="hidden px-5 py-2 bg-indigo-900 hover:bg-indigo-800 text-white text-sm font-semibold rounded-xl shadow transition-all">Следующий вопрос →</button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/TextPlugin.min.js"></script>
+    <script src="./animations.js?v=20260705-r3"></script>
+    <script src="./history-docx-data.js"></script>
+    <script src="./content-enhancements.js"></script>
+    <script src="./card-data.js"></script>
+    <script>
+        const stripHTML = value => String(value).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        const uniq = values => [...new Set(values.map(item => item.trim()).filter(Boolean))];
+        const referenceDates = (dates, text) => {
+            const source = `${dates}; ${stripHTML(text)}`;
+            const found = source.match(/\b\d{1,2}\s*(?:\([^)]+\)\s*)?(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря|окт\.|сент\.|авг\.)\s+\d{4}\s*г?\.?|\b\d{4}[-–]\d{4}(?:-х)?\s*(?:гг?\.?)?|\b\d{4}\s*(?:г\.|года|гг\.)?/gi) || [];
+            return uniq([...dates.split(';'), ...found]).map(date => `<li><strong>${date}</strong> — ключевая дата или период, необходимый для хронологической привязки ответа.</li>`).join('');
+        };
+        const referenceTerms = points => points.split(';').map(term => `<li><strong>${term.trim()}</strong> — опорное понятие билета; в ответе раскройте его через причины появления, механизм реализации и последствия.</li>`).join('');
+
+        const formatContent = (summary, dates, points, text, conclusion) => {
+            const extra = '';
+            const ticketArgs = { summary, dates, points, text, conclusion, extra };
+            const encodedArgs = encodeURIComponent(JSON.stringify(ticketArgs));
+            return `<!--ticket-args:${encodedArgs}-->${window.renderStructuredContent(summary, dates, points, text, conclusion, { extra })}`;
+        };
+
+        const BOOK_DATA = [
+            {
+                id: "b1",
+                category: "Россия в первой половине XIX в.",
+                title: "Билет 1. Приход к власти Александра І. «Эра либерализма», Сперанский, польская конституция",
+                content: formatContent(
+                    "Главная логика билета: Александр І начал с умеренного либерализма и проектов реформ, но после войн и революционных страхов перешёл к консервативному курсу.",
+                    "11 марта 1801 г; 1816-1819 гг; 1801-1825; 1801-1812; 1816-1819; 1820-1821",
+                    "Восшествие; «Эра либерализма» (1801-1812); Μ. Μ. Сперанский; Поворот к консерватизму; Военные поселения",
+                    `<li><strong>Восшествие.</strong> 11 марта 1801 г. в результате дворцового переворота был убит Павел І; Александр І (1801-1825) знал о заговоре, но рассчитывал лишь на отречение отца. Начало царствования получило название «дней Александровых прекрасное начало» (Пушкин).</li>
+                    <li><strong>«Эра либерализма» (1801-1812).</strong> Опираясь на «Негласный комитет» (Кочубей, Строганов, Новосильцев, Чарторыйский), император провёл серию умеренных реформ: восстановил отменённые Павлом «Жалованные грамоты», учредил министерства (1802) вместо коллегий, создал Государственный совет (1810). В 1803 г. - указ о «вольных хлебопашцах», разрешавший помещикам отпускать крестьян с землёй за выкуп. В Прибалтике крепостное право отменено в 1816-1819 гг. без земли.</li>
+                    <li><strong>М. М. Сперанский.</strong> Самый яркий реформатор эпохи. В записке «Введение к Уложению государственных законов» (1809) предложил план разделения властей: законодательная власть выборная Государственная дума, исполнительная министерства, судебная Сенат, объединяющий орган - Государственный совет. Реализована была лишь идея Госсовета. В 1812 г. Сперанский сослан.</li>
+                    <li><strong>Польская конституция 1815 г.</strong> После Венского конгресса в составе России образовалось Царство Польское. Дарованная Александром І конституция (одна из самых либеральных в Европе) предусматривала сейм, гражданские свободы, польский язык, отдельную армию.</li>
+                    <li><strong>Поворот к консерватизму.</strong> Причины: страх перед революциями в Европе (Испания, Италия, Греция 1820-1821), волнения в военных поселениях, восстание Семёновского полка 1820 г. С 1815 г. фактическим временщиком становится А. А. Аракчеев - глава Императорской канцелярии («аракчеевщина»).</li>`,
+                    "Итог: правление Александра І прошло путь от либеральных ожиданий к консервативному укреплению самодержавия."
+                )
+            },
+            {
+                id: "b2",
+                category: "Россия в первой половине XIX в.",
+                title: "Билет 2. Внешняя политика Александра I. Отечественная война 1812 года. Венский конгресс",
+                content: formatContent(
+                    "Главная логика билета: внешняя политика Александра І прошла путь от борьбы с Наполеоном к победе 1812 года и созданию послевоенного порядка в Европе.",
+                    "19 (31) марта 1814; 19 окт. 1813; 1813-1814 гг; 1808-1809; 1806-1812; 1804-1813",
+                    "Направления; Параллельные войны; Венский конгресс (сентябрь 1814 июнь 1815); Священный союз (сентябрь 1815)",
+                    `<li><strong>Направления.</strong> Западное (Франция/Англия), южное (Турция, Кавказ, Персия), северное (Швеция).</li>
+                    <li><strong>Войны с Наполеоном до 1812 г.</strong> Аустерлиц (1805), Фридланд (1807) - поражения 3-й и 4-й коалиций. По Тильзитскому миру 1807 г. Россия присоединилась к континентальной блокаде Англии, что больно ударило по русской экономике (помещики не могли вывозить хлеб).</li>
+                    <li><strong>Параллельные войны.</strong> Со Швецией (1808-1809) - присоединена Финляндия. С Турцией (1806-1812) - Бухарестский мир, Россия получила Бессарабию. С Персией (1804-1813) - Гюлистанский мир, Закавказье.</li>
+                    <li><strong>Отечественная война 1812 г.</strong> 12 (24) июня переход Великой армии Наполеона (~600 тыс.) через Неман. Русские армии (Барклай-де-Толли 1-я, Багратион 2-я, Тормасов 3-я) отступали. Соединение под Смоленском (август). 26 августа (7 сентября) Бородинское сражение под общим командованием М. И. Кутузова.</li>
+                    <li><strong>Заграничные походы 1813-1814 гг.</strong> «Битва народов» под Лейпцигом (16-19 окт. 1813) - поражение Наполеона; 19 (31) марта 1814 - русские войска в Париже. Александр І главный архитектор послевоенной Европы.</li>`,
+                    "Итог: победа в 1812 году сделала Россию одной из главных сил послевоенной Европы, а Священный союз закрепил её роль защитницы монархического порядка."
+                )
+            },
+            {
+                id: "b3",
+                category: "Россия в первой половине XIX в.",
+                title: "Билет 3. Движение декабристов: идеология, тайные общества, восстание 14 декабря 1825",
+                content: formatContent(
+                    "Главная логика билета: декабристы возникли из разочарования дворянских офицеров в самодержавии и стали первым открытым революционным выступлением в России.",
+                    "14 декабря 1825 г; 29 декабря 1825; 3 января 1826; 13 июля 1826; 1813-1814 гг",
+                    "Истоки; Тайные общества; Северное общество; Южное общество; Расправа и значение; Влияние на политику Николая І",
+                    `<li><strong>Истоки.</strong> Заграничные походы 1813-1814 гг. показали офицерству Европу без крепостного права; идеи Просвещения, французской революции; гордость за победу и желание видеть Россию свободной.</li>
+                    <li><strong>Тайные общества.</strong> «Союз спасения» (1816-1818); «Союз благоденствия» (1818-1821) шире, легче, цель формирование общественного мнения. После роспуска - два общества.</li>
+                    <li><strong>Северное общество (Петербург).</strong> Н. М. Муравьёв («Конституция»): конституционная монархия, федеративное устройство, высокий имущественный ценз, отмена крепостного права без земли (крестьяне получали 2 десятины - мало).</li>
+                    <li><strong>Южное общество (Украина, Тульчин).</strong> П. И. Пестель («Русская правда»): республика, унитарное государство, диктатура временного правительства, отмена крепостного права с землёй.</li>
+                    <li><strong>Восстание 14 декабря 1825 г.</strong> Воспользовались междуцарствием после смерти Александра І. Заговорщики вывели на Сенатскую площадь ~3000 солдат. «Диктатор» С. П. Трубецкой не явился. Восставшие отказывались присягать Николаю. Восстание было жестоко подавлено.</li>`,
+                    "Итог: декабристы стали первым открытым революционным выступлением в России и напрямую повлияли на охранительный курс Николая І."
+                )
+            },
+            {
+                id: "b4",
+                category: "Россия в первой половине XIX в.",
+                title: "Билет 4. Внутренняя политика Николая І. ІІІ отделение, теория официальной народности, реформа Киселёва",
+                content: formatContent(
+                    "Главная логика билета: Николай І построил жёсткую самодержавно-бюрократическую систему, усилил контроль и пытался осторожно решать крестьянский вопрос.",
+                    "3 июля 1826; 1840-1844 гг; 1825-1855; 1837-1841; 1839-1843",
+                    "Общая характеристика; Собственная Е.И.В. канцелярия; Теория официальной народности; Цензура; Крестьянский вопрос; Реформа П. Д. Киселёва (1837-1841)",
+                    `<li><strong>Общая характеристика.</strong> Царствование Николая I (1825-1855) - апогей самодержавно-бюрократического государства. Принципы: централизация, военизация управления, личный контроль императора, опора на дворянство, борьба с революционной заразой.</li>
+                    <li><strong>Собственная Е.И.В. канцелярия.</strong> Превратилась в надведомственный орган управления. ІІ отделение - кодификация (Сперанский, Свод законов 1832); III отделение - высшая полиция (создано 3 июля 1826, начальник А. Х. Бенкендорф, при нём корпус жандармов); V отделение - государственные крестьяне.</li>
+                    <li><strong>Теория официальной народности.</strong> Сформулирована министром просвещения С. С. Уваровым (1833) в формуле «Православие, Самодержавие, Народность». Идеология стала противоядием от европейского либерализма и просочилась во все сферы (цензура, литература, школа).</li>
+                    <li><strong>Цензура.</strong> «Чугунный устав» 1826 г.; некоторое смягчение в 1828 г. Под подозрением даже философия.</li>
+                    <li><strong>Крестьянский вопрос.</strong> Николай І считал крепостное право «злом», но боялся резких мер. Указ об обязанных крестьянах (1842) разрешал помещикам передавать землю крестьянам в наследственное пользование за повинности - практически не применялся. Реформа Киселева (1837-1841) улучшила положение госкрестьян.</li>`,
+                    "Итог: Николай І укрепил самодержавно-бюрократическую систему, но крестьянский вопрос всё равно оставался главной нерешённой проблемой империи."
+                )
+            },
+            {
+                id: "b5",
+                category: "Россия в первой половине XIX в.",
+                title: "Билет 5. Внешняя политика России в І половине XIX в. Кавказ. Крымская война",
+                content: formatContent(
+                    "Главная логика билета: внешняя политика Николая І сочетала борьбу с революциями, продвижение на Кавказе и в восточном вопросе, но Крымская война выявила отсталость России.",
+                    "13 сентября 1854; 27 августа 1855; 18 (30) марта 1856; 18 нояб. 1853; 1830-1831 гг; 1828-1829 гг",
+                    "Борьба с революциями; Восточный вопрос; Кавказская война (1817-1864); Парижский мир (18 (30) марта 1856)",
+                    `<li><strong>Борьба с революциями.</strong> Подавление Польского восстания 1830-1831 гг. В 1849 г. русские войска под командованием И. Ф. Паскевича по просьбе Австрии подавили Венгерскую революцию. Россия окончательно закрепила репутацию «жандарма Европы».</li>
+                    <li><strong>Восточный вопрос.</strong> Совокупность проблем, связанных с упадком Османской империи: режим черноморских проливов, судьба балканских христиан. Война 1828-1829 гг. с Турцией - Адрианопольский мир. Ункяр-Искелесийский договор 1833 г. дал выгоды, но Лондонские конвенции 1840 и 1841 гг. отменили это преимущество, закрыв Проливы для всех военных кораблей.</li>
+                    <li><strong>Кавказская война (1817-1864).</strong> Покорение горцев Северного Кавказа. Этапы: А. П. Ермолов (1817-1827) - система крепостей; имамат Шамиля (1834-1859) - теократическое государство в Чечне и Дагестане; пленение Шамиля в Гунибе 1859 г.</li>
+                    <li><strong>Крымская война 1853-1856 гг.</strong> Повод спор о святых местах в Палестине. Истинные причины обострение восточного вопроса, противодействие Англии и Франции усилению России. Синопское сражение, героическая оборона Севастополя.</li>
+                    <li><strong>Парижский мир (1856).</strong> Поражение России, нейтрализация Черного моря (запрет держать военный флот).</li>`,
+                    "Итог: Крымская война показала военно-техническую отсталость крепостной России и стала толчком к Великим реформам."
+                )
+            },
+            {
+                id: "b6",
+                category: "Великие реформы (1855-1881)",
+                title: "Билет 6. Отмена крепостного права в России. Предпосылки, содержание, результаты",
+                content: formatContent(
+                    "Главная логика билета: отмена крепостного права была вынужденной реформой после кризиса крепостнической системы и поражения в Крымской войне.",
+                    "19 февраля 1861 г; 28 декабря 1881 г; 1853-1856 гг; 1863-1866 гг",
+                    "Предпосылки; Подготовка; Результаты",
+                    `<li><strong>Предпосылки.</strong> Экономические: исчерпание возможностей крепостного труда, низкая производительность. Военные: поражение в Крымской войне 1853-1856 гг. Социальные: рост крестьянских волнений. Нравственные: длительная критика крепостничества в литературе.</li>
+                    <li><strong>Подготовка.</strong> В речи перед московским дворянством (март 1856) Александр ІІ произнёс: «Лучше отменить крепостное право сверху, нежели дожидаться того времени, когда оно начнёт само собой отменяться снизу». Работа Секретного комитета, затем Главного комитета и Редакционных комиссий (1859-1860, Я. И. Ростовцев, Н. А. Милютин).</li>
+                    <li><strong>Манифест и Положения 19 февраля 1861 г.</strong> Личное освобождение крестьян: получали гражданские права. Земля оставалась собственностью помещика; крестьянин получал усадьбу и полевой надел за выкуп. Введены временнообязанное состояние и выкупные платежи на 49 лет под 6% годовых. Проблема «отрезков».</li>
+                    <li><strong>Результаты.</strong> Освобождено около 22 млн помещичьих крестьян. Начались стремительная социальная дифференциация деревни, развитие капитализма «вширь», переход от барщины к капиталистической ренте. Половинчатость (малоземелье, отрезки, тяжесть выкупа) корень будущих революций.</li>`,
+                    "Итог: отмена крепостного права открыла путь капиталистическому развитию, но из-за малоземелья и выкупных платежей сохранила социальную напряжённость."
+                )
+            },
+            {
+                id: "b7",
+                category: "Великие реформы (1855-1881)",
+                title: "Билет 7. Великие реформы 1860-1870-х гг.",
+                content: formatContent(
+                    "Главная логика билета: Великие реформы Александра ІІ модернизировали управление, суд, армию, образование и финансы, но не разрушили самодержавие.",
+                    "1860-1870; 1874 г; 1864 г; 1870 г",
+                    "Земская реформа (1864); Городская реформа (1870); Судебная реформа (1864); Военная реформа Д. А. Милютина (1860-1870-е)",
+                    `<li><strong>Земская реформа (1864).</strong> Вводила выборные органы местного самоуправления в 34 губерниях — уездные и губернские земские собрания. Формировались по куриям (трёхступенчатые выборы для крестьян). Компетенция: «местные пользы и нужды» (хозяйство, школы, больницы, дороги).</li>
+                    <li><strong>Городская реформа (1870).</strong> Городовое положение: бессословные городские думы и управы. Выборы по трём имущественным куриям налогоплательщиков.</li>
+                    <li><strong>Судебная реформа (1864).</strong> Самая последовательная. Принципы: бессословность, гласность, состязательность, независимость суда, несменяемость судей. Появились суд присяжных (по уголовным делам), адвокатура («присяжные поверенные»), мировые суды для мелких дел.</li>
+                    <li><strong>Военная реформа Д. А. Милютина (1860-1870-е).</strong> Кульминация - Устав о воинской повинности 1874 г.: всесословная (вместо рекрутчины), всеобщая, со сроком службы 6 лет в армии и 7 во флоте. Создание 15 военных округов, отмена телесных наказаний.</li>
+                    <li><strong>Значение.</strong> Великие реформы буржуазная модернизация «сверху»: расчистили путь капитализму, заложили основы гражданского общества и правового государства. Однако сохранение самодержавия, сословности и общины делало реформы половинчатыми.</li>`,
+                    "Итог: Великие реформы модернизировали Россию сверху, но не уничтожили самодержавие, сословность и крестьянскую общину."
+                )
+            },
+            {
+                id: "b8",
+                category: "Пореформенная Россия и контрреформы",
+                title: "Билет 8. Внутренняя политика Александра III. Контрреформы. Особенности внешнеполитического курса",
+                content: formatContent(
+                    "Главная логика билета: Александр III после убийства Александра ІІ взял курс на контрреформы, укрепление самодержавия и осторожную внешнюю политику без войн.",
+                    "1 марта 1881 г; 29 апр. 1881 г; 14 авг. 1881 г; 1889 г; 1890 г",
+                    "Контекст; Идеология; Контрреформы; Крестьянский вопрос; Рабочий вопрос; Промышленность и финансы",
+                    `<li><strong>Контекст и идеология.</strong> 1 марта 1881 г. народовольцы убили Александра ІІ. Александр III (1881-1894) под влиянием К. П. Победоносцева и М. Н. Каткова выбрал курс на «укрепление основ». Манифест «О незыблемости самодержавия» 29 апр. 1881 г. «Положение о мерах к охранению...» (авг. 1881 г.) ввело режим исключительного положения.</li>
+                    <li><strong>Контрреформы.</strong> «Закон о земских участковых начальниках» 1889 г. из дворян, объединял административную и судебную власть над крестьянами. Земская контрреформа 1890 г. увеличила представительство дворян. Циркуляр «о кухаркиных детях» 1887 г. ограничил доступ к гимназиям для низов. Новый университетский устав 1884 г. отменил автономию.</li>
+                    <li><strong>Крестьянский и рабочий вопрос.</strong> 1881 г. - обязательный выкуп для оставшихся временнообязанных; 1885 - отмена подушной подати. 1882-1886 гг. - рабочее законодательство: запрет труда детей до 12 лет, ограничение труда женщин, фабричная инспекция.</li>
+                    <li><strong>Внешняя политика.</strong> Александр III избегал войн (прозван «Миротворцем»). Постепенно началось экономическое и политическое сближение с Францией, что стало основой будущей Антанты.</li>`,
+                    "Итог: Александр III укреплял самодержавие внутри страны, а во внешней политике избегал войн и сблизил Россию с Францией."
+                )
+            },
+            {
+                id: "b9",
+                category: "Пореформенная Россия и контрреформы",
+                title: "Билет 9. Промышленный переворот в России. Роль государства. Реформы Витте",
+                content: formatContent(
+                    "Главная логика билета: промышленный переворот в России шёл поздно и при сильной роли государства, а реформы Витте ускорили индустриальную модернизацию.",
+                    "1830-1840; 1880-1890; 1881-1886; 1887-1892; 1892-1903",
+                    "Хронология и особенности; Отрасли и география; Транспорт; Реформы 1880-х; С. Ю. Витте; Итоги",
+                    `<li><strong>Хронология и особенности.</strong> Начало промышленного переворота в России 1830-1840-е гг. (по С. Г. Струмилину), завершение 1880-е. Особенности: запоздалость, сохранение крепостного права до 1861 г. как тормоз, активная роль государства, широкое использование иностранного капитала и техники.</li>
+                    <li><strong>Отрасли и география.</strong> Текстильная промышленность (Москва, Иваново). Металлургия: Урал, со 2-й половины ХІХ в. динамичный южный регион (Донбасс, Юзовка). Машиностроение Петербург.</li>
+                    <li><strong>Транспорт.</strong> Царскосельская ж. д. 1837. Концессионный «железнодорожный бум» 1860-1870-х после реформы. Великие магистрали 1880-1890-х (Сибирская/Транссиб с 1891 г., закончен 1916).</li>
+                    <li><strong>С. Ю. Витте (министр финансов 1892-1903).</strong> Провел реформы форсированной индустриализации. Введение золотого монометаллизма (1897 г.) для привлечения иностранных инвестиций. Винная монополия (1894 г.) как источник доходов казны. Мощный протекционизм.</li>
+                    <li><strong>Итоги.</strong> 1890-е пик индустриального роста (~8% в год). К 1913 г. Россия 5-я экономика мира по абсолютным показателям, но низкие душевые показатели сохранялись. Диспропорция между промышленностью и сельским хозяйством корень революционных процессов.</li>`,
+                    "Итог: промышленный переворот и реформы Витте ускорили модернизацию России, но не сняли противоречия между промышленным ростом и отсталой деревней."
+                )
+            },
+            {
+                id: "b10",
+                category: "Пореформенная Россия и контрреформы",
+                title: "Билет 10. Общественное движение пореформенного периода. Народничество",
+                content: formatContent(
+                    "Главная логика билета: народничество стало главным революционным движением пореформенной России и искало путь к социализму через крестьянскую общину.",
+                    "1 марта 1881 г; 1874; 1876; 1879; 1883 г",
+                    "Разночинцы; Идейные истоки; Три течения народничества (1870-е); «Хождение в народ» (лето 1874); «Земля и воля» (1876); Раскол 1879",
+                    `<li><strong>Разночинцы.</strong> Социальный слой образованных людей недворянского происхождения («новые люди», герои Чернышевского). С 1860-х доминируют в революционном движении.</li>
+                    <li><strong>Идейные истоки.</strong> А. И. Герцен - «русский крестьянский социализм»: община может стать ячейкой социализма, минуя капитализм. Н. Г. Чернышевский революционный демократ (роман «Что делать?»).</li>
+                    <li><strong>Три течения народничества (1870-е).</strong> Все исходят из идеи особого пути России к социализму через крестьянскую общину. Пропагандистское (П. Л. Лавров) - революция результат долгой подготовки. Бунтарское (М. А. Бакунин) - крестьянство готово к бунту. Заговорщическое (П. Н. Ткачев) - захват власти узкой группой заговорщиков.</li>
+                    <li><strong>«Хождение в народ» (1874).</strong> Массовое стихийное движение молодежи в деревню для пропаганды. Закончилось провалом и массовыми арестами.</li>
+                    <li><strong>Раскол.</strong> В 1879 г. тайная организация «Земля и воля» раскололась на умеренный «Чёрный передел» (Плеханов) и радикальную террористическую «Народную волю» (Желябов, Перовская), которая убила Александра II 1 марта 1881 г.</li>
+                    <li><strong>Значение.</strong> «Чёрный передел» эмигрировал и в 1883 г. создал первую марксистскую группу «Освобождение труда» (Плеханов). Народничество стало школой для будущих эсеров и социал-демократов.</li>`,
+                    "Итог: народничество стало важной школой революционного движения и подготовило почву для эсеров и марксистов."
+                )
+            },
+            {
+                id: "b11",
+                category: "Начало XX века и Революция",
+                title: "Билет 11. Революция 1905-1907 гг. Манифест 17 октября и І Государственная дума",
+                content: formatContent(
+                    "Главная логика билета: революция 1905-1907 годов была вызвана нерешёнными социальными и политическими проблемами и вынудила самодержавие пойти на уступки.",
+                    "9 января 1905; 17 октября 1905 г; 1904-1905 гг; 3 июня 1907 г",
+                    "Предпосылки; Начало; Подъём весны-лета 1905; Октябрь 1905 пик; Декабрьское вооружённое восстание; Спад и І Дума",
+                    `<li><strong>Предпосылки.</strong> Нерешённость аграрного вопроса (малоземелье, община), тяжёлое положение рабочих, отсутствие политических свобод, поражения в русско-японской войне 1904-1905 гг. (Порт-Артур, Мукден, Цусима).</li>
+                    <li><strong>Начало.</strong> 9 января 1905 - «Кровавое воскресенье»: расстрел мирной демонстрации рабочих к Зимнему дворцу с петицией под руководством священника Г. А. Гапона. Вера в «доброго царя» подорвана.</li>
+                    <li><strong>Подъём весны-лета 1905.</strong> Всеобщие стачки, восстание на броненосце «Потёмкин» (июнь, Одесса), волнения в деревне, выступления в национальных окраинах.</li>
+                    <li><strong>Октябрь 1905 - пик.</strong> Всероссийская октябрьская политическая стачка (около 2 млн участников). Появление Советов рабочих депутатов. По совету С. Ю. Витте Николай II издает <strong>Манифест 17 октября 1905 г.</strong>, дарующий гражданские свободы и законодательную Государственную Думу.</li>
+                    <li><strong>Значение.</strong> Первая русская революция поколебала самодержавие; в стране появились конституция, парламент, легальные партии, профсоюзы. Не решены коренные вопросы, что дало импульс к Столыпинской реформе и в будущем к новой революции.</li>`,
+                    "Итог: революция 1905-1907 годов ограничила самодержавие парламентом и свободами, но главные противоречия страны не решила."
+                )
+            },
+            {
+                id: "b12",
+                category: "Начало XX века и Революция",
+                title: "Билет 12. Политические партии России начала ХХ в.",
+                content: formatContent(
+                    "Главная логика билета: партии начала ХХ века отражали раскол общества на монархистов, либералов, социалистов и национальные движения.",
+                    "1901-1902; 1898 г; 1903 г; 1905 г; 1912 г",
+                    "Консервативные (монархические); Либеральные; «Союз 17 октября»; Радикальные (эсеры); РСДРП (социал-демократы)",
+                    `<li><strong>Консервативные (монархические).</strong> «Союз русского народа» (нояб. 1905, Дубровин, Пуришкевич). Идеология: незыблемость самодержавия, единство империи, антисемитизм. Опора - патриархальное крестьянство, мещанство. Боевые отряды «чёрная сотня».</li>
+                    <li><strong>Либеральные (Кадеты).</strong> Конституционно-демократическая партия (окт. 1905, П. Н. Милюков). Программа: конституционная парламентская монархия, 8-часовой рабочий день, отчуждение помещичьей земли по «справедливой» цене. База: интеллигенция, либеральное дворянство.</li>
+                    <li><strong>Либеральные (Октябристы).</strong> «Союз 17 октября» (нояб. 1905, А. И. Гучков). Стояли на платформе Манифеста 17 октября: сильная исполнительная власть, ограниченные реформы. База: крупная буржуазия, промышленники.</li>
+                    <li><strong>Радикальные (Эсеры).</strong> Партия социалистов-революционеров (1901-1902, В. М. Чернов). Наследники народников. Программа: социализация земли (изъятие из частной собственности, распределение через общины); республика. Методы: террор (Боевая организация).</li>
+                    <li><strong>РСДРП.</strong> Основана в 1898 г., оформилась на II съезде 1903 г. Раскол: большевики (Ленин) - за партию профессиональных революционеров с жёсткой дисциплиной, диктатуру пролетариата; меньшевики (Мартов, Плеханов) - за широкую партию европейского типа, союз с либералами.</li>`,
+                    "Итог: партийная система начала ХХ века отражала раскол российского общества на монархистов, либералов, социалистов и национальные движения."
+                )
+            },
+            {
+                id: "b13",
+                category: "Начало XX века и Революция",
+                title: "Билет 13. П. А. Столыпин. «Третьеиюньская монархия». Аграрная реформа",
+                content: formatContent(
+                    "Главная логика билета: Столыпин пытался совместить жёсткое подавление революции с аграрной модернизацией и созданием опоры монархии в деревне.",
+                    "19 августа 1906 г; 3 июня 1907 г; 9 ноября 1906 г; 1 сентября 1911 г",
+                    "Личность и приход к власти; «Сначала успокоение, потом реформы»; «Третьеиюньская монархия»; Аграрная реформа; Гибель и оценка",
+                    `<li><strong>«Сначала успокоение, потом реформы».</strong> П. А. Столыпин (председатель Совета министров с июля 1906). 19 августа 1906 г. учреждены военно-полевые суды («столыпинские галстуки» - виселицы) для быстрых расправ над террористами.</li>
+                    <li><strong>«Третьеиюньская монархия».</strong> 3 июня 1907 г. - роспуск ІІ Думы и введение нового избирательного закона без согласия Думы (нарушение Основных законов): резко увеличено представительство землевладельцев и крупной буржуазии. ІІІ Дума стала лояльной опорой правительства (октябристско-кадетское большинство).</li>
+                    <li><strong>Аграрная реформа.</strong> Основа - указ 9 ноября 1906 г. Цели: создать слой крепких крестьян-собственников (опору монархии), разрушить общину. Поощрялось выделение крестьянских хозяйств на <strong>хутора</strong> и <strong>отруба</strong>. Активно поддерживалось переселение крестьян в Сибирь для освоения новых земель.</li>
+                    <li><strong>Гибель и оценка.</strong> 1 сентября 1911 г. Столыпин смертельно ранен в Киевском оперном театре Д. Богровым. Оценка: попытка модернизации без политической демократизации; стимулировала развитие, но не предотвратила революцию («20 лет покоя» не были получены).</li>`,
+                    "Итог: Столыпин пытался модернизировать деревню и укрепить монархию, но реформа не успела завершиться и не предотвратила революцию."
+                )
+            },
+            {
+                id: "b14",
+                category: "Революция и Гражданская война (1917-1922)",
+                title: "Билет 14. Великая Российская революция 1917 г. От Февраля к Октябрю. Первые декреты",
+                content: formatContent(
+                    "Главная логика билета: революция 1917 года выросла из военного, продовольственного и политического кризиса и привела от падения монархии к власти Советов.",
+                    "6 января 1918 г; 1917 г",
+                    "Февральская революция; Двоевластие; Кризисы Временного правительства; Октябрьское вооружённое восстание; Становление советской власти",
+                    `<li><strong>Февральская революция.</strong> К концу 1916 - нач. 1917 кризис: продовольственный, транспортный, военный (потери ~5 млн), политический («министерская чехарда»). Привело к падению монархии.</li>
+                    <li><strong>Двоевластие.</strong> Временное правительство (премьер кн. Г. Е. Львов, затем А. Ф. Керенский) и Советы (Петросовет). Временное правительство откладывало ключевые реформы до Учредительного собрания и выступало за войну «до победного конца».</li>
+                    <li><strong>Кризисы Временного правительства.</strong> Апрельский (нота Милюкова); июньский (массовые антивоенные демонстрации); июльский (разоружение большевиков после провала наступления); августовский корниловский мятеж (провал Корнилова привел к вооружению большевистской Красной гвардии).</li>
+                    <li><strong>Большевизация Советов.</strong> Апрельские тезисы Ленина «Вся власть Советам». К сентябрю - большевистское большинство в Петроградском и Московском советах (Троцкий - председатель Петросовета).</li>
+                    <li><strong>Октябрьское вооружённое восстание.</strong> 24-25 октября (6-7 ноября) 1917 г. - захват ключевых пунктов Петрограда. Штурм Зимнего ночью 25-26 октября. Открылся ІІ Всероссийский съезд Советов, принявший Декреты о мире и о земле, закрепив власть большевиков.</li>`,
+                    "Итог: революция 1917 года привела к падению монархии, кризису Временного правительства и установлению советской власти."
+                )
+            },
+            {
+                id: "b15",
+                category: "Революция и Гражданская война (1917-1922)",
+                title: "Билет 15. Гражданская война 1918-1922 гг.",
+                content: formatContent(
+                    "Главная логика билета: Гражданская война стала следствием раскола общества после Октября и завершилась победой большевиков и установлением однопартийной власти.",
+                    "3 марта 1918 г; 1921-1922; 1918-1922",
+                    "Причины; Основные силы; Этапы; Интервенция; Цена и последствия",
+                    `<li><strong>Причины.</strong> Раскол общества по итогам Октября, разгон Учредительного собрания, Брестский мир 3 марта 1918 г. (потеря огромных территорий и трети промышленности), продовольственная диктатура и комбеды (лето 1918), интервенция держав.</li>
+                    <li><strong>Основные силы.</strong> «Красные» - РККА (Л. Д. Троцкий; военспецы под надзором комиссаров). «Белые» - Добровольческая армия (Алексеев, Корнилов, Деникин, Врангель); армия А. В. Колчака на востоке; армия Н. Н. Юденича на северо-западе. «Зелёные» - крестьянские повстанцы (Махно, Антонов).</li>
+                    <li><strong>Этапы.</strong> Май-ноябрь 1918: мятеж Чехословацкого корпуса, красный террор. Нояб. 1918 - март 1919: интервенция Антанты (Одесса, Мурманск). Март 1919 - март 1920: главные сражения с Колчаком и Деникиным. 1920: Советско-польская война и разгром Врангеля в Крыму. Дальний Восток до 1922 г.</li>
+                    <li><strong>Интервенция.</strong> Англия, Франция, США, Япония формально для возврата России в войну, реально расчленение и ослабление; помощь оружием белым.</li>
+                    <li><strong>Цена и последствия.</strong> Погибло ~12 млн чел. (от голода, эпидемий, террора); ~2 млн эмиграция. Разрушение экономики. Утверждение однопартийной диктатуры РКП(б).</li>`,
+                    "Итог: Гражданская война завершилась победой большевиков, разрушением страны и утверждением однопартийной диктатуры."
+                )
+            },
+            {
+                id: "b16",
+                category: "Революция и Гражданская война (1917-1922)",
+                title: "Билет 16. Политика «военного коммунизма»",
+                content: formatContent(
+                    "Главная логика билета: военный коммунизм был мобилизационной системой Гражданской войны, но привёл к хозяйственному кризису и переходу к НЭПу.",
+                    "11 января 1919 г; 29 ноября 1920 г; 18 марта 1921; 1918-1921 гг",
+                    "Хронология и природа; Основные черты; Кризис 1920-1921",
+                    `<li><strong>Хронология и природа.</strong> 1918-1921 гг. Сложился в условиях Гражданской войны как мобилизационный режим, но имел и доктринальные основания стремление к ускоренному переходу к коммунизму без переходных стадий.</li>
+                    <li><strong>Основные черты.</strong> Продовольственная диктатура с мая 1918 г., комбеды, продотряды; с 11 января 1919 г. <strong>продовольственная развёрстка</strong> (изъятие «излишков» хлеба у крестьян по обязательным нормам). Национализация всей крупной, средней, а затем и мелкой промышленности. Запрет частной торговли (декабрь 1918), государственное распределение по карточкам, трудовая повинность и милитаризация труда.</li>
+                    <li><strong>Кризис 1920-1921.</strong> Промышленное производство 1/7 от уровня 1913 г.; продукция сельского хозяйства 40% от 1913. Города опустели. Голод 1921-1922 гг. в Поволжье до 5 млн жертв. Крестьянские восстания: Антоновщина в Тамбовской губернии (1920-1921), Кронштадтский мятеж матросов.</li>
+                    <li><strong>Итог.</strong> На Х съезде РКП(б) (март 1921) принято решение о переходе к новой экономической политике (НЭП). Ленин позже назвал военный коммунизм «ошибкой».</li>`,
+                    "Итог: военный коммунизм помог мобилизовать ресурсы в Гражданскую войну, но привёл к хозяйственному кризису и переходу к НЭПу."
+                )
+            }
+        ];
+
+        if (window.enhanceTicketsFromDocx) window.enhanceTicketsFromDocx(BOOK_DATA);
+
+        const TERMS = [
+            { term: "Военные поселения", definition: "Особая организация войск 1810-1857 гг., сочетавшая военную службу с крестьянским трудом для сокращения расходов (Аракчеев)." },
+            { term: "Теория официальной народности", definition: "Идеологическая доктрина Николая I (Уваров), основанная на триаде «Православие, Самодержавие, Народность»." },
+            { term: "Континентальная блокада", definition: "Экономическая система Наполеона I, запрещавшая европейским государствам торговлю с Великобританией, что больно ударило по экспорту России в нач. XIX в." },
+            { term: "Выкупные платежи", definition: "Ежегодные выплаты крестьян государству в течение 49 лет под 6% годовых за землю, полученную в ходе реформы 1861 года." },
+            { term: "Третье отделение", definition: "Высший орган политического сыска, контроля и цензуры в Российской империи, созданный при Николае I (Бенкендорф)." },
+            { term: "Народничество", definition: "Идеология интеллигенции 1870-х гг., верившая в особый путь России к социализму через крестьянскую общину, минуя капитализм." },
+            { term: "Третьеиюньская монархия", definition: "Политическая система, сложившаяся после разгона II Думы 3 июня 1907 г., с новым избирательным законом в пользу помещиков и буржуазии (Столыпин)." },
+            { term: "Военный коммунизм", definition: "Политика большевиков в 1918-1921 гг., включавшая продразверстку, национализацию всей промышленности, отмену торговли и милитаризацию труда." }
+        ];
+
+        const QUIZ_QUESTIONS = [
+            {
+                q: "К какому периоду относится «Эра либерализма» и деятельность Негласного комитета?",
+                a: ["Правление Николая I", "Правление Александра I (1801-1812)", "Правление Александра II", "Период реформ Столыпина"],
+                correct: 1,
+                hint: "«Эра либерализма» — это первая половина царствования Александра I, когда он опирался на друзей из Негласного комитета."
+            },
+            {
+                q: "Какой программный документ был написан Павлом Пестелем для Южного общества декабристов?",
+                a: ["Конституция", "Введение к уложению государственных законов", "Русская Правда", "Манифест 17 октября"],
+                correct: 2,
+                hint: "Пестель был автором радикальной «Русской Правды», предлагавшей установление республики в России."
+            },
+            {
+                q: "В каком году в России было отменено крепостное право?",
+                a: ["1861 г.", "1881 г.", "1905 г.", "1825 г."],
+                correct: 0,
+                hint: "Манифест Александра II об отмене крепостного права был подписан 19 февраля 1861 года."
+            },
+            {
+                q: "Что являлось экономической основой реформ С.Ю. Витте в конце XIX века?",
+                a: ["Введение продразверстки", "Разрушение крестьянской общины", "Введение золотого монометаллизма и протекционизм", "Переход к «военному коммунизму»"],
+                correct: 2,
+                hint: "С.Ю. Витте в 1897 г. ввел золотой стандарт рубля и поддерживал промышленность высокими таможенными тарифами."
+            },
+            {
+                q: "Что такое «продовольственная разверстка» (продразверстка)?",
+                a: ["Выкупные платежи крестьян", "Налог на торговлю хлебом", "Изъятие «излишков» хлеба у крестьян по обязательным нормам", "Свободная продажа хлеба на биржах"],
+                correct: 2,
+                hint: "Продразверстка была стержнем политики «военного коммунизма» в годы Гражданской войны."
+            }
+        ];
+
+        QUIZ_QUESTIONS.push(...(window.DOCX_QUIZ_QUESTIONS || []));
+
+        let bookmarks = JSON.parse(localStorage.getItem('hist_bookmarks_rus')) || [];
+        let readSections = JSON.parse(localStorage.getItem('hist_read_rus')) || [];
+
+        function initApp() {
+            syncThemeIcons();
+            renderTOC();
+            renderBookmarks();
+            updateProgress();
+            // Load first article by default
+            if (Array.isArray(BOOK_DATA) && BOOK_DATA.length) selectTopic(BOOK_DATA[0].id);
+        }
+
+        function syncThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const iconDark = document.getElementById('theme-icon-dark');
+            const iconLight = document.getElementById('theme-icon-light');
+            if (iconDark) iconDark.classList.toggle('hidden', !isDark);
+            if (iconLight) iconLight.classList.toggle('hidden', isDark);
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('hist_theme', isDark ? 'dark' : 'light'); } catch (error) { /* приватный режим */ }
+            syncThemeIcons();
+        }
+
+        const MODE_BUTTON_INACTIVE = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50";
+        const MODE_BUTTON_ACTIVE = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-200";
+
+        function switchMode(mode) {
+            ['read', 'cards', 'quiz'].forEach(m => {
+                const view = document.getElementById(`view-${m}`);
+                const button = document.getElementById(`btn-mode-${m}`);
+                if (view) view.classList.add('hidden');
+                if (button) button.className = MODE_BUTTON_INACTIVE;
+            });
+
+            const activeView = document.getElementById(`view-${mode}`);
+            if (!activeView) return;
+            activeView.classList.remove('hidden');
+            const activeButton = document.getElementById(`btn-mode-${mode}`);
+            if (activeButton) activeButton.className = MODE_BUTTON_ACTIVE;
+
+            const sidebar = document.getElementById('sidebar-toc');
+            if (sidebar) sidebar.classList.toggle('hidden', mode !== 'read');
+
+            if (mode === 'cards') renderCards();
+            if (mode === 'quiz') startQuiz();
+        }
+
+        function renderTOC(dataList = BOOK_DATA) {
+            const container = document.getElementById('toc-container');
+            
+            // Group by category
+            const categories = {};
+            dataList.forEach(item => {
+                if (!categories[item.category]) categories[item.category] = [];
+                categories[item.category].push(item);
+            });
+
+            const categoryColors = {
+                "Россия в первой половине XIX в.": "text-indigo-900/70 dark:text-indigo-300",
+                "Великие реформы (1855-1881)": "text-teal-900/70 dark:text-teal-300",
+                "Пореформенная Россия и контрреформы": "text-rose-900/70 dark:text-rose-300",
+                "Начало XX века и Революция": "text-amber-900/70 dark:text-amber-300",
+                "Революция и Гражданская война (1917-1922)": "text-red-900/70 dark:text-red-300"
+            };
+
+            container.innerHTML = Object.keys(categories).map(catName => `
+                <div class="space-y-1">
+                    <span class="text-xs font-bold ${categoryColors[catName] || 'text-slate-500'} block pt-2">${catName}</span>
+                    ${categories[catName].map(item => `
+                        <button onclick="selectTopic('${item.id}')" class="w-full text-left pl-2 py-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex justify-between items-center group">
+                            <span class="truncate pr-2">${item.title.split('.')[0]}. ${item.title.split('.')[1].substring(0,25)}...</span>
+                            ${readSections.includes(item.id) ? `<svg class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>` : ''}
+                        </button>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function selectTopic(id) {
+            const topic = BOOK_DATA.find(t => t.id === id);
+            if (!topic) return;
+
+            switchMode('read');
+            
+            document.getElementById('header-category').innerText = topic.category;
+            document.getElementById('header-title').innerText = topic.title;
+            
+            const isBookmarked = bookmarks.some(b => b.id === id);
+            const isRead = readSections.includes(id);
+            const currentIndex = BOOK_DATA.findIndex(t => t.id === id);
+            const prevTopic = currentIndex > 0 ? BOOK_DATA[currentIndex - 1] : null;
+            const nextTopic = currentIndex < BOOK_DATA.length - 1 ? BOOK_DATA[currentIndex + 1] : null;
+            const navButton = (target, label, direction) => target
+                ? `<button onclick="selectTopic('${target.id}')" class="flex min-w-0 flex-1 items-center ${direction === 'right' ? 'justify-end text-right' : 'justify-start text-left'} gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-indigo-300">
+                        ${direction === 'left' ? '<span class="text-lg">&larr;</span>' : ''}
+                        <span class="min-w-0">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">${label}</span>
+                            <span class="block truncate">${target.title}</span>
+                        </span>
+                        ${direction === 'right' ? '<span class="text-lg">&rarr;</span>' : ''}
+                    </button>`
+                : `<button disabled class="flex min-w-0 flex-1 items-center ${direction === 'right' ? 'justify-end text-right' : 'justify-start text-left'} gap-2 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-300 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-600">
+                        ${direction === 'left' ? '<span class="text-lg">&larr;</span>' : ''}
+                        <span class="min-w-0">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider">${label}</span>
+                            <span class="block truncate">Нет билета</span>
+                        </span>
+                        ${direction === 'right' ? '<span class="text-lg">&rarr;</span>' : ''}
+                    </button>`;
+
+            let bookmarkBtn = `<button onclick="toggleBookmark('${topic.id}', '${topic.title.replace(/'/g, "\\'")}')" class="p-1.5 transition-colors ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'}" title="В закладки"><svg class="w-6 h-6" ${isBookmarked ? 'fill="currentColor"' : 'fill="none"'} stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></button>`;
+            
+            let readBtn = `<button onclick="markAsRead('${topic.id}')" class="p-1.5 transition-colors ${isRead ? 'text-emerald-500' : 'text-slate-400 hover:text-emerald-500'}" title="Отметить как изученное"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>`;
+
+            document.getElementById('article-body').innerHTML = `
+                <div class="absolute right-6 top-6 flex space-x-2 bg-white dark:bg-slate-800 rounded-lg p-1 shadow-sm border border-slate-100 dark:border-slate-700">
+                    ${bookmarkBtn}
+                    ${readBtn}
+                </div>
+                ${topic.content}
+                <div class="mt-8 grid gap-3 border-t border-slate-100 pt-5 dark:border-slate-700 sm:grid-cols-2">
+                    ${navButton(prevTopic, 'Прошлый билет', 'left')}
+                    ${navButton(nextTopic, 'Следующий билет', 'right')}
+                </div>
+            `;
+            
+            // Update TOC highlighting if needed
+            renderTOC();
+        }
+
+        function renderBookmarks() {
+            const container = document.getElementById('bookmarks-container');
+            if (bookmarks.length === 0) {
+                container.innerHTML = `<p class="italic text-center py-2">Закладок пока нет. Нажимайте на флажок в главах учебника.</p>`;
+                return;
+            }
+
+            container.innerHTML = bookmarks.map(b => `
+                <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-750 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
+                    <button onclick="selectTopic('${b.id}')" class="font-medium text-left truncate max-w-[160px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400">${b.title.split('.')[1] || b.title}</button>
+                    <button onclick="toggleBookmark('${b.id}', '${b.title.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-700">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleBookmark(id, title) {
+            const index = bookmarks.findIndex(b => b.id === id);
+            if (index === -1) {
+                bookmarks.push({ id, title });
+                showToast("Добавлено в закладки!");
+            } else {
+                bookmarks.splice(index, 1);
+                showToast("Удалено из закладок");
+            }
+            localStorage.setItem('hist_bookmarks_rus', JSON.stringify(bookmarks));
+            renderBookmarks();
+            // Re-render current article to update bookmark icon
+            const currentArticleId = BOOK_DATA.find(t => document.getElementById('header-title').innerText.includes(t.title))?.id;
+            if(currentArticleId === id) selectTopic(id);
+        }
+
+        function markAsRead(id) {
+            const index = readSections.indexOf(id);
+            if (index === -1) {
+                readSections.push(id);
+                showToast("Раздел отмечен как изученный!");
+            } else {
+                readSections.splice(index, 1);
+                showToast("Метка изучения снята");
+            }
+            localStorage.setItem('hist_read_rus', JSON.stringify(readSections));
+            updateProgress();
+            
+            // Re-render current article to update read icon
+            const currentArticleId = BOOK_DATA.find(t => document.getElementById('header-title').innerText.includes(t.title))?.id;
+            if(currentArticleId === id) selectTopic(id);
+        }
+
+        function updateProgress() {
+            const total = BOOK_DATA.length;
+            const progress = total ? Math.round((readSections.length / total) * 100) : 0;
+            const text = document.getElementById('read-progress-text');
+            if (text) text.innerText = `${progress}%`;
+            if (window.animateStudyProgress) {
+                // animations.js сам обновляет обе полосы (десктоп и мобильную).
+                window.animateStudyProgress(progress);
+                return;
+            }
+            const bar = document.getElementById('read-progress-bar');
+            const barM = document.getElementById('read-progress-bar-m');
+            const textM = document.getElementById('read-progress-text-m');
+            if (bar) bar.style.width = `${progress}%`;
+            if (barM) barM.style.width = `${progress}%`;
+            if (textM) textM.innerText = `${progress}%`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-indigo-950 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all opacity-0 translate-y-2";
+            toast.innerHTML = `
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-2'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function handleSearch(query) {
+            query = query.toLowerCase();
+            const filtered = BOOK_DATA.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.content.toLowerCase().includes(query)
+            );
+            renderTOC(filtered);
+        }
+
+        const CARD_TYPE_META = {
+            all: { label: 'Все', badge: 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' },
+            date: { label: 'Дата', badge: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200' },
+            person: { label: 'Личность', badge: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200' },
+            reform: { label: 'Реформа', badge: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200' },
+            event: { label: 'Событие', badge: 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200' },
+            term: { label: 'Термин', badge: 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-200' }
+        };
+        const ALL_CARDS = [
+            ...(typeof CARD_DATA !== 'undefined' && Array.isArray(CARD_DATA)
+                ? CARD_DATA
+                : TERMS.map((item, index) => ({ id: `term-${index}`, type: 'term', period: 'Ключевые понятия', front: item.term, back: item.definition, ticket: 'Материалы сайта', tags: [item.term] }))),
+            ...(window.DOCX_DERIVED_CARDS || [])
+        ];
+        let activeCardType = 'all';
+        let activeCardQuery = '';
+
+        function escapeHTML(value) {
+            return String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        }
+
+        function textMatches(value, query) {
+            return String(value || '').toLowerCase().includes(query);
+        }
+
+        function filteredCards() {
+            const query = activeCardQuery.trim().toLowerCase();
+            return ALL_CARDS.map((card, index) => ({ card, index })).filter(({ card }) => {
+                const typeMatch = activeCardType === 'all' || card.type === activeCardType;
+                const queryMatch = !query || textMatches(card.front, query) || textMatches(card.back, query) || textMatches(card.period, query) || textMatches(card.ticket, query) || (card.tags || []).some(tag => textMatches(tag, query));
+                return typeMatch && queryMatch;
+            });
+        }
+
+        function renderCardFilters() {
+            const container = document.getElementById('card-type-filters');
+            if (!container) return;
+            container.innerHTML = ['all', 'date', 'person', 'reform', 'event', 'term'].map(type => {
+                const meta = CARD_TYPE_META[type];
+                const count = type === 'all' ? ALL_CARDS.length : ALL_CARDS.filter(card => card.type === type).length;
+                const active = activeCardType === type;
+                return `<button type="button" onclick="setCardType('${type}')" class="rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'}">${meta.label} <span class="opacity-60">${count}</span></button>`;
+            }).join('');
+        }
+
+        function setCardType(type) {
+            activeCardType = CARD_TYPE_META[type] ? type : 'all';
+            renderCards();
+        }
+
+        function renderCards() {
+            renderCardFilters();
+            const search = document.getElementById('card-search');
+            if (search && !search.dataset.bound) {
+                search.dataset.bound = 'true';
+                let cardSearchTimer = 0;
+                search.addEventListener('input', event => {
+                    activeCardQuery = event.target.value;
+                    // Дебаунс: полная перерисовка сетки карточек на каждый символ фризила ввод.
+                    window.clearTimeout(cardSearchTimer);
+                    cardSearchTimer = window.setTimeout(renderCards, 160);
+                });
+            }
+            const cards = filteredCards();
+            const summary = document.getElementById('card-summary');
+            if (summary) summary.textContent = `${cards.length} из ${ALL_CARDS.length} · ${CARD_TYPE_META[activeCardType].label}`;
+            const container = document.getElementById('cards-container');
+            if (!container) return;
+            const token = ++cardRenderToken;
+            if (!cards.length) {
+                container.innerHTML = '<div class="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-900">Карточки не найдены.</div>';
+                return;
+            }
+            // Порционный рендер: синхронная отрисовка всей колоды (300+ карточек)
+            // фризила открытие вкладки. Первая порция — сразу, остальное — в фоне.
+            container.innerHTML = cards.slice(0, CARD_RENDER_CHUNK).map(cardHTML).join('');
+            if (cards.length <= CARD_RENDER_CHUNK) return;
+            let offset = CARD_RENDER_CHUNK;
+            const appendChunk = () => {
+                if (token !== cardRenderToken || !container.isConnected) return;
+                const before = container.children.length;
+                const slice = cards.slice(offset, offset + CARD_RENDER_CHUNK);
+                offset += slice.length;
+                container.insertAdjacentHTML('beforeend', slice.map(cardHTML).join(''));
+                // Тот же GSAP-каскад, что при открытии вкладки (animations.js).
+                if (window.codexRevealCards) window.codexRevealCards([...container.children].slice(before));
+                if (offset < cards.length) scheduleCardChunk(appendChunk);
+            };
+            scheduleCardChunk(appendChunk);
+        }
+
+        const CARD_RENDER_CHUNK = 24;
+        // Токен «актуальности»: новый renderCards обесценивает фоновые дорисовки старого.
+        let cardRenderToken = 0;
+
+        function scheduleCardChunk(callback) {
+            if (typeof requestIdleCallback !== 'undefined') requestIdleCallback(callback, { timeout: 500 });
+            else window.setTimeout(callback, 40);
+        }
+
+        function cardHTML({ card, index }) {
+            const meta = CARD_TYPE_META[card.type] || CARD_TYPE_META.term;
+            const tags = (card.tags || []).slice(0, 3);
+            return `
+                <div class="perspective-1000 w-full h-64 cursor-pointer" onclick="flipCard(${index})">
+                    <div id="card-${index}" class="preserve-3d duration-500 w-full h-full relative">
+                        <div class="backface-hidden absolute w-full h-full bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-wider ${meta.badge}">${meta.label}</span>
+                                <span class="text-right text-[11px] font-bold uppercase tracking-wider text-slate-400">${escapeHTML(card.period)}</span>
+                            </div>
+                            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white my-auto text-center leading-tight">${escapeHTML(card.front)}</h3>
+                            <span class="text-xs text-slate-400 text-center">Нажмите, чтобы перевернуть</span>
+                        </div>
+                        <div class="rotate-y-180 backface-hidden absolute w-full h-full bg-indigo-950 text-white p-6 rounded-2xl shadow-md flex flex-col justify-between">
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-indigo-950">${meta.label}</span>
+                                <span class="text-right text-[11px] font-bold uppercase tracking-wider text-indigo-200">${escapeHTML(card.ticket)}</span>
+                            </div>
+                            <p class="text-sm text-indigo-100 my-auto text-center font-medium leading-relaxed">${escapeHTML(card.back)}</p>
+                            <div class="flex flex-wrap justify-center gap-1.5">${tags.map(tag => `<span class="rounded-full bg-white/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">${escapeHTML(tag)}</span>`).join('')}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function flipCard(idx) {
+            document.getElementById(`card-${idx}`).classList.toggle('rotate-y-180');
+        }
+
+        let currentQuestionIdx = 0;
+        let correctAnswersCount = 0;
+        let answeredQuestionsCount = 0;
+
+        function startQuiz() {
+            currentQuestionIdx = 0;
+            correctAnswersCount = 0;
+            answeredQuestionsCount = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+            if (!q) return;
+            document.getElementById('quiz-question-number').innerText = `Вопрос ${currentQuestionIdx + 1} из ${QUIZ_QUESTIONS.length}`;
+            document.getElementById('quiz-score').innerText = `Правильно: ${correctAnswersCount} / ${answeredQuestionsCount}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIdx + 1) / QUIZ_QUESTIONS.length) * 100}%`;
+            document.getElementById('quiz-question-text').innerText = q.q;
+
+            const answersContainer = document.getElementById('quiz-answers-container');
+            answersContainer.innerHTML = q.a.map((option, idx) => `
+                <button onclick="checkAnswer(${idx})" class="quiz-option-btn w-full text-left px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-700 font-medium transition-all text-sm text-slate-700 dark:text-slate-300">${option}</button>
+            `).join('');
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('btn-next-question').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+            const optionButtons = document.querySelectorAll('.quiz-option-btn');
+            
+            optionButtons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = "w-full text-left px-5 py-3 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-200 font-semibold transition-all text-sm";
+                } else if (idx === selectedIdx) {
+                    btn.className = "w-full text-left px-5 py-3 rounded-xl border border-rose-500 bg-rose-50 text-rose-900 dark:bg-rose-950/20 dark:text-rose-200 font-semibold transition-all text-sm";
+                }
+            });
+
+            answeredQuestionsCount++;
+            if (selectedIdx === q.correct) {
+                correctAnswersCount++;
+                document.getElementById('quiz-feedback').className = "p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/10 text-slate-700 dark:text-slate-300 text-sm";
+                document.getElementById('quiz-feedback').innerHTML = `<strong>Верно!</strong> <br>${q.hint}`;
+            } else {
+                document.getElementById('quiz-feedback').className = "p-4 rounded-xl border border-rose-200 bg-rose-50/50 dark:bg-rose-950/10 text-slate-700 dark:text-slate-300 text-sm";
+                document.getElementById('quiz-feedback').innerHTML = `<strong>Ошибка!</strong> <br>${q.hint}`;
+            }
+
+            document.getElementById('quiz-score').innerText = `Правильно: ${correctAnswersCount} / ${answeredQuestionsCount}`;
+            document.getElementById('quiz-feedback').classList.remove('hidden');
+            document.getElementById('btn-next-question').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < QUIZ_QUESTIONS.length) {
+                showQuestion();
+            } else {
+                document.getElementById('quiz-question-text').innerText = "Тестирование успешно завершено!";
+                document.getElementById('quiz-answers-container').innerHTML = `
+                    <div class="text-center py-6 space-y-4">
+                        <p class="text-xl font-bold text-slate-900 dark:text-white">Ваш результат: ${correctAnswersCount} из ${QUIZ_QUESTIONS.length} (${Math.round((correctAnswersCount/QUIZ_QUESTIONS.length)*100)}%)</p>
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-indigo-900 hover:bg-indigo-800 text-white font-semibold rounded-xl shadow">Начать заново</button>
+                    </div>
+                `;
+                document.getElementById('quiz-feedback').classList.add('hidden');
+                document.getElementById('btn-next-question').classList.add('hidden');
+            }
+        }
+
+        // addEventListener вместо window.onload — не затирает чужие обработчики load.
+        window.addEventListener('load', initApp, { once: true });
+    </script>
+    <script src="./codex-premium-ui.js?v=20260705-r3"></script>
+</div>
+</body>
+</html>

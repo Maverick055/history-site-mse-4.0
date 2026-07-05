@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <script>
+        // Восстанавливаем сохранённую тему до первой отрисовки — без этого
+        // тема сбрасывалась при каждом переходе и страница «мигала» светлым.
+        (function () {
+            try {
+                var stored = localStorage.getItem('hist_theme');
+                if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (error) { /* приватный режим: остаёмся на светлой теме */ }
+        })();
+    </script>
+    <title>Исторический навигатор | Билеты 32-58 (Всеобщая история и РФ 90-х)</title>
+    <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+    <link rel="mask-icon" href="logo2-mono.svg" color="#211f4c">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef4ff',
+                            100: '#d7e5fe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Instrument Serif', 'Georgia', 'serif'],
+                        display: ['Instrument Serif', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(26, 54, 93, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(26, 54, 93, 0.4); }
+        .dark::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+    </style>
+    <link rel="stylesheet" href="./codex-premium-ui.css?v=20260705-r3">
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-200 dark:bg-slate-900 dark:text-slate-100">
+<div class="exposition-frame">
+  <span class="crop-mark crop-h crop-tl-h"></span><span class="crop-mark crop-v crop-tl-v"></span>
+  <span class="crop-mark crop-h crop-tr-h"></span><span class="crop-mark crop-v crop-tr-v"></span>
+  <span class="crop-mark crop-h crop-bl-h"></span><span class="crop-mark crop-v crop-bl-v"></span>
+  <span class="crop-mark crop-h crop-br-h"></span><span class="crop-mark crop-v crop-br-v"></span>
+
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Верхняя строка: логотип + действия -->
+            <div class="flex items-center gap-2 h-14">
+                <a href="./index.html" class="flex items-center gap-2 shrink-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900" aria-label="На главную страницу Исторического Навигатора">
+                    <img src="./logo.svg" alt="Логотип Исторического Навигатора" class="site-logo h-9 w-9 rounded-lg shadow-md shrink-0">
+                    <div class="hidden sm:block min-w-0">
+                        <h1 class="text-base font-bold tracking-tight text-indigo-950 dark:text-white leading-tight">Исторический Навигатор</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Билеты 32–58</p>
+                    </div>
+                </a>
+                <!-- Поиск в шапке (только на десктопе) -->
+                <div class="hidden lg:flex relative flex-1 max-w-sm mx-2">
+                    <input type="search" id="global-search" oninput="handleSearch(this.value)" placeholder="Поиск по билетам, датам, терминам..." aria-label="Поиск" autocomplete="off" class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 border border-transparent rounded-full focus:bg-white focus:border-indigo-500 focus:outline-none dark:bg-slate-800 dark:text-white transition-all">
+                    <div class="absolute left-3 top-2.5 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 ml-auto shrink-0">
+                    <div class="hidden lg:flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Прогресс:</span>
+                        <div class="w-24 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                            <div id="read-progress-bar" class="bg-emerald-500 h-2 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <span id="read-progress-text" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">0%</span>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-white focus:outline-none">
+                        <svg id="theme-icon-dark" class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg id="theme-icon-light" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14.243 12a2.243 2.243 0 11-4.486 0 2.243 2.243 0 014.486 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Мобильная строка поиска (всегда видима на экранах < lg) -->
+            <div class="lg:hidden pb-2 relative">
+                <input type="search" id="mobile-header-search" oninput="handleSearch(this.value)" placeholder="Поиск по билетам, датам, терминам..." aria-label="Поиск по билетам, датам и терминам" autocomplete="off" class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-100 border border-transparent rounded-full focus:bg-white focus:border-indigo-500 focus:outline-none dark:bg-slate-800 dark:text-white transition-all">
+                <div class="absolute left-3 top-2.5 text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+            <!-- Мобильный прогресс чтения -->
+            <div class="lg:hidden flex items-center gap-2 pb-3">
+                <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 shrink-0">Прогресс:</span>
+                <div class="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                    <div id="read-progress-bar-m" class="bg-emerald-500 h-1.5 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="read-progress-text-m" class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="section-plaque"><span class="plaque-num">§ 06</span><span>ЧТЕНИЕ · БИЛЕТЫ 32–58</span><span class="plaque-tail">ВСЕОБЩАЯ ИСТОРИЯ · РФ 90-х</span></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <!-- ЛЕВАЯ ПАНЕЛЬ С НАВИГАЦИЕЙ -->
+            <aside class="lg:col-span-1 space-y-6 lg:sticky lg:top-24 h-fit max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+                <!-- Переключатель режимов -->
+                <div class="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-1">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Режим работы</p>
+                    <button onclick="switchMode('read')" id="btn-mode-read" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <span>Учебник</span>
+                    </button>
+                    <button onclick="switchMode('cards')" id="btn-mode-cards" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <span>Карточки</span>
+                    </button>
+                    <button onclick="switchMode('quiz')" id="btn-mode-quiz" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Проверить себя (Тест)</span>
+                    </button>
+                </div>
+
+                <!-- Содержание -->
+                <div id="sidebar-toc" class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Содержание (32-58)</p>
+                    <nav id="toc-container" class="space-y-3 text-sm">
+                        <!-- Динамическое содержание -->
+                    </nav>
+                </div>
+
+                <!-- Закладки -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Избранные билеты</p>
+                    <div id="bookmarks-container" class="space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                        <!-- Динамические закладки -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ПРАВАЯ ОБЛАСТЬ КОНТЕНТА -->
+            <main class="lg:col-span-3 space-y-6">
+                <!-- ОКНО РЕЖИМА ЧТЕНИЯ -->
+                <section id="view-read" class="space-y-8">
+                    <div id="read-header" class="border-b-2 border-indigo-900 pb-3 mb-6">
+                        <span id="header-category" class="text-xs font-bold text-indigo-600 uppercase tracking-widest">Категория</span>
+                        <h2 id="header-title" class="text-3xl font-serif font-semibold text-slate-900 dark:text-white">Выберите билет</h2>
+                    </div>
+                    
+                    <article id="article-body" class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 relative transition-all">
+                        <div class="text-center py-10 text-slate-500">Пожалуйста, выберите нужный экзаменационный билет слева.</div>
+                    </article>
+                </section>
+
+                <!-- ОКНО РЕЖИМА КАРТОЧЕК -->
+                <section id="view-cards" class="hidden space-y-6">
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">Интерактивные карточки</h2>
+                        <p class="text-xs text-slate-500">Повторяйте даты, личности, реформы, события и термины.</p>
+                        <div id="card-type-filters" class="mt-4 flex flex-wrap gap-2"></div>
+                        <input id="card-search" type="search" placeholder="Поиск по карточкам" autocomplete="off" class="mt-3 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                        <div id="card-summary" class="mt-3 text-xs font-bold uppercase tracking-wider text-slate-400"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="cards-container"></div>
+                </section>
+
+                <!-- ОКНО РЕЖИМА ТЕСТОВ -->
+                <section id="view-quiz" class="hidden space-y-6">
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <h2 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">Проверить свои знания</h2>
+                        <p class="text-xs text-slate-500">Интерактивный тест по мировой истории, войнам и реформам (Билеты 32-58).</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-3xl shadow-md border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <span id="quiz-question-number" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Вопрос 1</span>
+                            <span id="quiz-score" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Правильно: 0 / 0</span>
+                        </div>
+                        <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-indigo-600 h-1.5 transition-all" style="width: 10%"></div>
+                        </div>
+                        <h3 id="quiz-question-text" class="text-lg font-semibold text-slate-900 dark:text-white">Текст вопроса...</h3>
+                        <div id="quiz-answers-container" class="grid grid-cols-1 gap-3"></div>
+                        <div id="quiz-feedback" class="hidden p-4 rounded-xl border"></div>
+                        <div class="flex justify-end">
+                            <button id="btn-next-question" onclick="nextQuestion()" class="hidden px-5 py-2 bg-indigo-900 hover:bg-indigo-800 text-white text-sm font-semibold rounded-xl shadow transition-all">Следующий вопрос →</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/TextPlugin.min.js"></script>
+    <script src="./animations.js?v=20260705-r3"></script>
+    <script src="./history-docx-data.js"></script>
+    <script src="./content-enhancements.js"></script>
+    <script src="./card-data.js"></script>
+    <script>
+        const stripHTML = value => String(value).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        const uniq = values => [...new Set(values.map(item => item.trim()).filter(Boolean))];
+        const WORLD_DATE_DESCRIPTIONS = {
+            "1776": "выход «Богатства народов» А. Смита, теоретическая основа классического либерализма и свободной торговли.",
+            "1823": "доктрина Монро: США заявили о недопустимости новой европейской колонизации Америки.",
+            "1846": "отмена британских Хлебных законов, символ победы фритредерства и интересов промышленной буржуазии.",
+            "1861-1865": "Гражданская война в США, решившая вопрос рабства и единства федерации.",
+            "1871": "завершение объединения Германии и провозглашение Германской империи.",
+            "1913": "создание Федеральной резервной системы США после банковских паник начала XX в.",
+            "1914-1918": "Первая мировая война, разрушившая старый европейский баланс сил и классический золотой стандарт.",
+            "1919": "Версальский договор и оформление послевоенной системы международных отношений.",
+            "1929-1933": "Великая депрессия, крупнейший кризис индустриального капитализма межвоенного периода.",
+            "1933": "приход Ф. Д. Рузвельта к власти в США и начало Нового курса; в Германии - назначение Гитлера рейхсканцлером.",
+            "1944": "Бреттон-Вудская конференция, создавшая доллароцентричную послевоенную валютную систему.",
+            "1945": "окончание Второй мировой войны и создание ООН.",
+            "1947": "провозглашение плана Маршалла и независимость Индии.",
+            "1948-1952": "реализация плана Маршалла, ускорившая восстановление Западной Европы.",
+            "1949": "создание НАТО и провозглашение Китайской Народной Республики.",
+            "1957": "Римские договоры и создание Европейского экономического сообщества.",
+            "1971": "Никсон прекратил обмен долларов на золото, что фактически сломало Бреттон-Вудскую систему.",
+            "1973": "первый нефтяной шок и переход развитых стран к эпохе стагфляции.",
+            "1976": "Ямайские соглашения закрепили плавающие валютные курсы и демонетизацию золота.",
+            "1978": "начало реформ Дэн Сяопина в Китае.",
+            "1979": "второй нефтяной шок после Иранской революции; приход М. Тэтчер к власти в Великобритании.",
+            "1981": "начало экономического курса Р. Рейгана в США.",
+            "1992": "Маастрихтский договор заложил Европейский союз и путь к единой валюте.",
+            "1997-1998": "азиатский финансовый кризис, выявивший риски краткосрочного капитала и фиксированных валютных курсов.",
+            "1999": "запуск евро в безналичной форме."
+        };
+        const WORLD_TERM_DEFINITIONS = {
+            "Золотой стандарт": "валютная система, при которой денежная единица имеет фиксированное золотое содержание, а обменные курсы валют устойчивы через привязку к золоту.",
+            "ФРС": "Федеральная резервная система США, центральный банк, созданный в 1913 г. для стабилизации банковской системы и денежного обращения.",
+            "Новый курс": "комплекс реформ Ф. Д. Рузвельта в 1933-1938 гг.: банковское регулирование, общественные работы, социальное страхование и поддержка спроса.",
+            "Бреттон-Вудская система": "послевоенная международная валютная система 1944-1971 гг., основанная на долларе, привязанном к золоту.",
+            "Ямайская валютная система": "система плавающих валютных курсов, юридически оформленная соглашениями 1976 г. после краха золотодолларового порядка.",
+            "Евро": "единая валюта Европейского союза, введённая безналично в 1999 г. и налично в 2002 г.",
+            "Laissez-faire": "доктрина минимального вмешательства государства в экономику, свободной торговли и самостоятельности рынка.",
+            "Фритредерство": "политика свободной торговли без высоких таможенных барьеров.",
+            "Протекционизм": "политика защиты национальной промышленности с помощью тарифов, квот и государственных мер поддержки.",
+            "Антимонопольное законодательство": "законы, ограничивающие монополии и картели; в США началось с акта Шермана 1890 г.",
+            "Доктрина Монро": "внешнеполитическая декларация США 1823 г. против вмешательства европейских держав в дела Америки.",
+            "Manifest Destiny": "идея «предначертания судьбы», оправдывавшая расширение США на Запад как историческую миссию.",
+            "Рисорджименто": "движение за национальное объединение Италии в XIX в.",
+            "Realpolitik": "прагматичная политика, ориентированная на баланс сил и государственный интерес, а не на идеологические лозунги.",
+            "Лига Наций": "международная организация коллективной безопасности, созданная после Первой мировой войны.",
+            "ООН": "Организация Объединённых Наций, созданная в 1945 г. для поддержания международного мира и безопасности.",
+            "НАТО": "Североатлантический альянс, военно-политический блок западных стран, созданный в 1949 г.",
+            "ОПЕК": "Организация стран-экспортёров нефти, влияющая на мировые цены на нефть через координацию добычи.",
+            "План Маршалла": "американская программа помощи Западной Европе в 1948-1952 гг., сочетавшая восстановление экономики и сдерживание коммунизма.",
+            "Социальное государство": "модель, при которой государство берёт на себя обязательства по занятости, страхованию, пенсиям, медицине и образованию.",
+            "Социальная рыночная экономика": "модель ФРГ: конкуренция и частная инициатива сочетаются с социальной защитой и антимонопольным контролем.",
+            "НТР": "научно-техническая революция, ускоренное внедрение науки, автоматизации, электроники и новых материалов в производство.",
+            "Стагфляция": "одновременное сочетание инфляции, безработицы и низкого экономического роста.",
+            "Рейганомика": "экономический курс США 1980-х: снижение налогов, дерегулирование, жёсткая антиинфляционная политика и рост военных расходов.",
+            "Тэтчеризм": "британский неоконсервативный курс: приватизация, ограничение профсоюзов, борьба с инфляцией и сокращение роли государства.",
+            "Вашингтонский консенсус": "набор рыночных рекомендаций 1980-1990-х гг.: приватизация, либерализация, бюджетная дисциплина и открытость капиталу.",
+            "Модель «летящих гусей»": "азиатская модель последовательной передачи отраслей от более развитых стран к менее развитым в экспортной индустриализации.",
+            "НИС": "новые индустриальные страны, быстро модернизировавшиеся через экспорт, индустриальную политику и включение в мировые рынки.",
+            "Горячий капитал": "краткосрочные международные финансовые вложения, быстро уходящие при признаках кризиса.",
+            "Опиумные войны": "войны Великобритании и других держав против Китая в XIX в., открывшие китайский рынок силой.",
+            "Неравноправные договоры": "договоры, навязанные Китаю и другим странам под военным давлением, ограничивавшие их суверенитет.",
+            "Мэйдзи": "эпоха японской модернизации с 1868 г., объединившая западные институты с сильной императорской властью.",
+            "Сатьяграха": "тактика ненасильственного сопротивления М. Ганди.",
+            "Гоминьдан": "Национальная партия Китая, связанная с Сунь Ятсеном и Чан Кайши.",
+            "КПК": "Коммунистическая партия Китая, основанная в 1921 г.",
+            "Большой скачок": "кампания Мао Цзэдуна 1958-1960 гг. по ускоренной индустриализации и коммунизации деревни, приведшая к катастрофическому голоду.",
+            "Культурная революция": "политическая кампания Мао 1966-1976 гг., разрушавшая партийные и культурные институты под лозунгом борьбы с «буржуазным перерождением»."
+        };
+        const dateDescription = date => WORLD_DATE_DESCRIPTIONS[date.replace(/\s*г\.$/, '').trim()] || WORLD_DATE_DESCRIPTIONS[date.trim()] || 'ключевая дата или период, необходимый для хронологической привязки ответа.';
+        const referenceDates = (dates, text) => {
+            const source = `${dates}; ${stripHTML(text)}`;
+            const found = source.match(/\b\d{1,2}\s*(?:\([^)]+\)\s*)?(?:января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря|окт\.|сент\.|авг\.)\s+\d{4}\s*г?\.?|\b\d{4}[-–]\d{4}(?:-х)?\s*(?:гг?\.?)?|\b\d{4}\s*(?:г\.|года|гг\.)?/gi) || [];
+            return uniq([...dates.split(';'), ...found]).map(date => `<li><strong>${date}</strong> — ${dateDescription(date)}</li>`).join('');
+        };
+        const referenceTerms = (points, text) => {
+            const corpus = stripHTML(`${points} ${text}`).toLowerCase();
+            const items = Object.entries(WORLD_TERM_DEFINITIONS)
+                .filter(([term]) => corpus.includes(term.toLowerCase()))
+                .map(([term, definition]) => `<li><strong>${term}</strong> — ${definition}</li>`);
+            return items.length ? items.join('') : points.split(';').map(term => `<li><strong>${term.trim()}</strong> — опорное понятие билета; в ответе раскройте его через причины появления, механизм реализации и последствия.</li>`).join('');
+        };
+        const ECONOMIC_CONTEXTS = [
+            { keys: ["Промышленный переворот"], title: "Промышленный переворот и мировой рынок", body: `<p><strong>Предпосылки.</strong> Машинное производство потребовало массовых рынков, дешёвого сырья, кредита и транспортной инфраструктуры. <strong>Механизм.</strong> Фабрика, паровая энергия, железные дороги, банки и акционерные общества связали производство, капитал и колонии в единую систему. <strong>Последствия.</strong> Возник мировой рынок, усилилось «великое расхождение» Запада и неиндустриальных регионов, а денежная стабильность XIX в. всё чаще связывалась с золотым стандартом.</p>` },
+            { keys: ["Laissez-faire", "Капитализм"], title: "Свободная торговля и золотой стандарт", body: `<p><strong>Предпосылки.</strong> Индустриальная Британия нуждалась в дешёвом хлебе, сырье и внешних рынках. <strong>Механизм.</strong> Отмена Хлебных законов 1846 г., снижение тарифов и распространение золотого стандарта сделали торговлю и расчёты предсказуемее. <strong>Последствия.</strong> Свободная торговля ускорила глобализацию XIX в., но усилила зависимость периферии от экспорта сырья и финансовых центров.</p>` },
+            { keys: ["Предначертание судьбы", "Доктрина Монро"], title: "Экспансия США и финансовая база роста", body: `<p><strong>Предпосылки.</strong> Рост населения, хлопковая экономика Юга, промышленность Севера и земельный голод толкали США на Запад. <strong>Механизм.</strong> Покупки территорий, войны, железные дороги, продажа земель и банковский кредит превращали фронтир в рынок. <strong>Последствия.</strong> США стали континентальной державой, но спор о рабстве на новых землях подготовил Гражданскую войну.</p>` },
+            { keys: ["Гражданская война", "Реконструкция"], title: "Финансы Гражданской войны и Реконструкция", body: `<p><strong>Предпосылки.</strong> Северу требовались огромные ресурсы для тотальной войны. <strong>Механизм.</strong> Правительство выпускало «greenbacks», ввело федеральные налоги и создало систему национальных банков 1863-1864 гг. <strong>Последствия.</strong> Победа Севера укрепила единый рынок, федеральное государство и промышленный капитал, но незавершённая Реконструкция оставила расовую сегрегацию.</p>` },
+            { keys: ["Позолоченный век", "Прогрессивная эра"], title: "Монополии, золотой стандарт и ФРС", body: `<p><strong>Предпосылки.</strong> Железные дороги, сталь, нефть и массовая миграция создали гигантские корпорации и банковские риски. <strong>Механизм.</strong> Акт Шермана 1890 г. ограничивал тресты, золотой стандарт закреплял доверие к доллару, а ФРС 1913 г. стала ответом на банковские паники. <strong>Последствия.</strong> США получили регулируемый капитализм: рынок сохранился, но государство стало арбитром конкуренции и финансовой стабильности.</p>` },
+            { keys: ["Рисорджименто"], title: "Экономика объединённой Италии", body: `<p><strong>Предпосылки.</strong> Раздробленность мешала единому рынку, железным дорогам и налоговой системе. <strong>Механизм.</strong> Пьемонтская модель управления, единая лира, общие тарифы и армия были распространены на всю страну. <strong>Последствия.</strong> Италия получила национальное государство, но юг оказался слабее севера, а налоговое давление и аграрная бедность породили массовую эмиграцию.</p>` },
+            { keys: ["Бисмарк", "Германская империя"], title: "Германское объединение и индустриальный рывок", body: `<p><strong>Предпосылки.</strong> Пруссии нужен был единый рынок и политическое лидерство. <strong>Механизм.</strong> Таможенный союз, войны Бисмарка, французская контрибуция 1871 г., единая марка и протекционизм 1879 г. ускорили промышленный рост. <strong>Последствия.</strong> Германия стала ведущей индустриальной державой Европы, что усилило конкуренцию с Британией и Францией.</p>` },
+            { keys: ["Балканы", "коалиции"], title: "Империализм и союзнические блоки", body: `<p><strong>Предпосылки.</strong> Новые державы требовали колоний, рынков и статуса, а старые империи защищали занятые позиции. <strong>Механизм.</strong> Военные союзы, гонка вооружений, кредиты союзникам и дипломатические кризисы превратили локальные конфликты в системный риск. <strong>Последствия.</strong> Балканский кризис стал спусковым механизмом мировой войны.</p>` },
+            { keys: ["Опиумные войны", "Тайпины", "боксёры"], title: "Китай и неравноправная интеграция в мировой рынок", body: `<p><strong>Предпосылки.</strong> Британия стремилась исправить торговый дисбаланс с Китаем и открыть закрытый рынок. <strong>Механизм.</strong> Военное давление, опиумная торговля, договорные порты, экстерриториальность и контрибуции подорвали суверенитет Цин. <strong>Последствия.</strong> Китай оказался в полуколониальной зависимости; внутренние восстания и реформы стали реакцией на внешний шок.</p>` },
+            { keys: ["Мэйдзи"], title: "Реформы Мэйдзи как государственная модернизация", body: `<p><strong>Предпосылки.</strong> «Открытие» Японии показало угрозу колониальной зависимости. <strong>Механизм.</strong> Ликвидация княжеств, земельно-налоговая реформа, всеобщая воинская повинность, школы, госзаказы и дзайбацу создали современное государство. <strong>Последствия.</strong> Япония избежала участи Китая, стала имперской державой и включилась в борьбу за рынки Кореи и Китая.</p>` },
+            { keys: ["колониальная система"], title: "Экономика колониализма", body: `<p><strong>Предпосылки.</strong> Индустриальным державам требовались сырьё, рынки сбыта, базы и престиж. <strong>Механизм.</strong> Прямое управление, протектораты, концессии, железные дороги и экспортные монокультуры подчиняли периферию метрополиям. <strong>Последствия.</strong> Колонии включались в мировую экономику неравноправно: инфраструктура росла, но зависимость и социальные разрывы усиливались.</p>` },
+            { keys: ["І Мировая", "Брестский мир"], title: "Первая мировая и крах золотого стандарта", body: `<p><strong>Предпосылки.</strong> Тотальная война требовала расходов, несовместимых с довоенной финансовой дисциплиной. <strong>Механизм.</strong> Государства отменяли размен на золото, занимали, печатали деньги и вводили контроль над хозяйством. <strong>Последствия.</strong> Инфляция, долги и репарации подорвали старый мировой порядок и подготовили валютные кризисы межвоенной эпохи.</p>` },
+            { keys: ["Версальско-Вашингтонская", "Лига Наций"], title: "Версаль, репарации и межвоенная нестабильность", body: `<p><strong>Предпосылки.</strong> Победители хотели наказать Германию и восстановить платежи по военным долгам. <strong>Механизм.</strong> Репарации, новые границы, мандатная система и Лига Наций должны были закрепить мир. <strong>Последствия.</strong> Система оказалась перегружена долгами и реваншизмом; планы Дауэса и Юнга лишь временно стабилизировали Европу американскими кредитами.</p>` },
+            { keys: ["Индия", "Ганди"], title: "Индия: колониальная экономика и независимость", body: `<p><strong>Предпосылки.</strong> Британское правление встроило Индию в империю как рынок и сырьевую базу. <strong>Механизм.</strong> Налоги, железные дороги, экспорт хлопка и чая сочетались с политическим исключением индийцев. <strong>Последствия.</strong> Национальное движение превратило бойкот товаров, сатьяграху и массовую мобилизацию в инструмент давления, но раздел 1947 г. создал долгий индо-пакистанский конфликт.</p>` },
+            { keys: ["Сунь Ятсен", "Гоминьдан", "КПК"], title: "Китайская революция и поиск модернизации", body: `<p><strong>Предпосылки.</strong> Цинская империя не справлялась с иностранным давлением, милитаризмом и социальным кризисом. <strong>Механизм.</strong> Республиканские идеи Сунь Ятсена, партийное строительство Гоминьдана, советская помощь и рост КПК дали конкурирующие проекты модернизации. <strong>Последствия.</strong> Китайская политика стала борьбой за контроль над государством, землёй и национальным рынком.</p>` },
+            { keys: ["Новый курс", "Рузвельт"], title: "Новый курс Рузвельта", body: `<p><strong>Предпосылки.</strong> Великая депрессия разрушила банки, занятость и доверие к свободному рынку. <strong>Механизм.</strong> Банковские каникулы, FDIC, SEC, общественные работы, регулирование сельского хозяйства, закон Вагнера и Social Security расширили роль государства. <strong>Последствия.</strong> США не сразу вышли из кризиса, но создали модель регулируемого капитализма и социальную инфраструктуру XX в.</p>` },
+            { keys: ["Германская модель", "фашизма"], title: "Нацистская экономика", body: `<p><strong>Предпосылки.</strong> Депрессия, безработица и страх коммунизма разрушили доверие к Веймару. <strong>Механизм.</strong> Общественные работы, скрытое перевооружение, контроль профсоюзов, четырёхлетний план и автаркия подчиняли хозяйство войне. <strong>Последствия.</strong> Безработица снизилась, но рост держался на милитаризации, долгах и экспансии, что вело к войне.</p>` },
+            { keys: ["Тоталитарные режимы"], title: "Тоталитаризм и мобилизационная экономика", body: `<p><strong>Предпосылки.</strong> Массовое общество после войны и кризис либеральных институтов создали спрос на порядок. <strong>Механизм.</strong> Партия, вождь, пропаганда, полиция и контроль труда превращали общество в ресурс государства. <strong>Последствия.</strong> Экономика становилась управляемой сверху, но зависела от насилия, внешней экспансии и подавления гражданских свобод.</p>` },
+            { keys: ["Вторая мировая", "ООН"], title: "Вторая мировая и новый мировой порядок", body: `<p><strong>Предпосылки.</strong> Версальские противоречия, депрессия и экспансия стран Оси разрушили межвоенный баланс. <strong>Механизм.</strong> Тотальная мобилизация, ленд-лиз, стратегические бомбардировки и коалиционное планирование сделали войну глобальной. <strong>Последствия.</strong> ООН, деколонизация, раздел Европы и лидерство США/СССР оформили порядок второй половины XX в.</p>` },
+            { keys: ["Бреттон-Вудс", "План Маршалла"], title: "Бреттон-Вудс, Ямайская система и евро", body: `<p><strong>Предпосылки.</strong> После войны Европе не хватало валюты, продовольствия и доверия к рынкам. <strong>Механизм.</strong> Бреттон-Вудс создал долларовую систему, МВФ и МБРР; план Маршалла и немецкая денежная реформа 1948 г. запустили восстановление; после кризиса 1971 г. Ямайская валютная система 1976 г. узаконила плавающие курсы; Маастрихтский договор 1992 г. подготовил евро, введённый безналично в 1999 г. <strong>Последствия.</strong> Запад получил долгий рост, социальное государство, финансовую глобализацию и основу будущего ЕС.</p>` },
+            { keys: ["Холодная война", "НАТО"], title: "Холодная война как военно-экономическое соперничество", body: `<p><strong>Предпосылки.</strong> После 1945 г. идеологический конфликт совпал с борьбой за безопасность и рынки. <strong>Механизм.</strong> НАТО, военные расходы, технологическая гонка, помощь союзникам и санкционные режимы закрепили блоковую экономику. <strong>Последствия.</strong> Мир стал биполярным, а кризисы в Берлине и на Кубе показали пределы силового давления в ядерную эпоху.</p>` },
+            { keys: ["Создание КНР", "Мао"], title: "Маоистская модель", body: `<p><strong>Предпосылки.</strong> Новый Китай унаследовал бедность, войну и аграрное перенаселение. <strong>Механизм.</strong> Земельная реформа, национализация, советская помощь, коммуны и кампании Большого скачка пытались ускорить социалистическую модернизацию. <strong>Последствия.</strong> Государство укрепилось, но волюнтаризм привёл к голоду 1959-1961 гг. и разрушительным политическим кампаниям.</p>` },
+            { keys: ["Дэн Сяопин"], title: "Реформы Дэн Сяопина", body: `<p><strong>Предпосылки.</strong> После Мао Китай нуждался в продовольствии, технологиях и выходе из изоляции. <strong>Механизм.</strong> Семейный подряд, специальные экономические зоны, привлечение инвестиций, рыночные стимулы и сохранение монополии КПК создали смешанную модель. <strong>Последствия.</strong> Китай стал центром мировой промышленности, но сохранил авторитарную политическую систему и региональное неравенство.</p>` },
+            { keys: ["рейганомика", "тэтчеризм", "Кризис 1973-1975"], title: "Кризис 1970-х и неолиберальный поворот", body: `<p><strong>Предпосылки.</strong> Нефтяные шоки, стагфляция и падение производительности подорвали кейнсианский консенсус. <strong>Механизм.</strong> Монетаризм, приватизация, дерегулирование, снижение налогов и борьба с профсоюзами изменили роль государства. <strong>Последствия.</strong> Инфляция была снижена, финансовые рынки выросли, но усилились неравенство и деиндустриализация старых регионов.</p>` },
+            { keys: ["Азиатский кризис", "летящих гусей"], title: "Азиатская модель и кризис 1997-1998 гг.", body: `<p><strong>Предпосылки.</strong> Экспортный рост НИС опирался на кредит, фиксированные курсы и приток иностранного капитала. <strong>Механизм.</strong> Девальвация тайского бата запустила бегство капитала по региону. <strong>Последствия.</strong> МВФ навязал стабилизационные программы, страны усилили валютные резервы и банковский надзор, а Китай укрепил позиции в региональной экономике.</p>` }
+        ];
+        const economicContext = (points, text) => {
+            const corpus = stripHTML(`${points} ${text}`).toLowerCase();
+            const blocks = ECONOMIC_CONTEXTS
+                .filter(item => item.keys.some(key => corpus.includes(key.toLowerCase())))
+                .map(item => `<div><h5 class="mb-1 font-bold text-slate-900 dark:text-white">${item.title}</h5>${item.body}</div>`);
+            return blocks.length ? `<div class="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 dark:border-amber-900/60 dark:bg-amber-950/20"><h4 class="mb-3 text-sm font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300">Экономический и международный контекст</h4><div class="space-y-3">${blocks.join('')}</div></div>` : '';
+        };
+
+        const compileContent = (summary, dates, points, text, conclusion) => {
+            const extra = economicContext(points, text);
+            const ticketArgs = { summary, dates, points, text, conclusion, extra };
+            const encodedArgs = encodeURIComponent(JSON.stringify(ticketArgs));
+            return `<!--ticket-args:${encodedArgs}-->${window.renderStructuredContent(summary, dates, points, text, conclusion, { extra })}`;
+        };
+
+        const BOOK_DATA = [
+            {
+                id: "b32",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 32. Промышленный переворот и его последствия. Революция в энергетике, транспорте, коммуникациях",
+                content: compileContent(
+                    "промышленный переворот начался в Англии благодаря сочетанию свободной рабочей силы, капитала, ресурсов и рынка, а затем изменил производство, транспорт и мировую экономику.",
+                    "1815-1860; 1840-1880; 1820-1880; 1830-1880; 1820-1914; 1838-1850",
+                    "Хронология; Почему Англия стала первой; Текстильная отрасль; Энергетика и транспорт; Социальные последствия; Мировое значение",
+                    `<p><strong>• Суть и хронология.</strong> Промышленный переворот - переход от ручного труда и мануфактуры к машинному фабричному производству. В Англии он начался во второй половине XVIII в. и завершился к 1830-м; во Франции шёл в 1815-1860 гг., в Германии - в 1840-1880 гг., в США - в 1820-1880 гг. Разные темпы объяснялись не только изобретениями, но и зрелостью рынка, капитала и государства.</p>
+                     <p><strong>• Почему первой стала Англия.</strong> Огораживания вытолкнули часть крестьян с земли и создали рынок свободной рабочей силы. Колонии, торговля и мануфактуры дали капитал; уголь и железо обеспечили сырьё; морская торговля и внутренний рынок давали спрос; политические условия защищали собственность и предпринимательство. Поэтому именно Англия смогла быстрее других соединить технику, деньги и рабочие руки.</p>
+                     <p><strong>• Механизм переворота.</strong> Сначала изменилась текстильная отрасль: летучий челнок Дж. Кея, прялка «Дженни» Дж. Харгривса, водяная машина Р. Аркрайта, мюль-машина С. Кромптона и ткацкий станок Э. Картрайта резко подняли производительность. Фабрика стала выгоднее домашнего труда, а рабочий день, дисциплина и разделение операций превратились в основу новой промышленной системы.</p>
+                     <p><strong>• Энергетика, металлургия и транспорт.</strong> Паровая машина Дж. Уатта освободила производство от зависимости от рек и стала универсальным двигателем индустриальной эпохи. Рост металлургии и добычи угля поддержал железные дороги, пароходы и машиностроение. Транспортная революция связала рынки, ускорила перевозку сырья и товаров и сделала промышленный рост самоподдерживающимся.</p>
+                     <p><strong>• Социальные последствия.</strong> Возникли индустриальные города, фабричный пролетариат и новая буржуазия. Одновременно росли эксплуатация, детский труд, перенаселение рабочих кварталов и социальные конфликты. Именно эти противоречия породили рабочее движение, профсоюзы и первые требования государственного вмешательства.</p>
+                     <p><strong>• Мировое значение.</strong> Промышленный переворот многократно увеличил производительность, оформил капитализм как мировую систему и закрепил мировое разделение труда: индустриальные державы производили товары, а колонии и зависимые регионы поставляли сырьё. Так возник разрыв между индустриальным Западом и многими не-западными обществами.</p>`,
+                    "Итог: промышленный переворот создал индустриальное общество и мировой капиталистический рынок, но вместе с техническим прогрессом породил новые социальные конфликты и глобальное неравенство."
+                )
+            },
+            {
+                id: "b33",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 33. Капиталистический способ производства и доктрина laissez-faire",
+                content: compileContent(
+                    "капитализм и laissez-faire ускорили промышленный рост, но их логика свободного рынка одновременно усилила эксплуатацию, социальное неравенство и рабочее движение.",
+                    "28 мая 1871; 1838-1850; 1814-1830; 1830-1848; 1848-1852; 1852-1870",
+                    "Капитализм; Классическая политэкономия; Laissez-faire; Рост и свобода рынка; Социальные противоречия; Рабочее движение",
+                    `<p><strong>• Капитализм как система.</strong> Капиталистический способ производства основан на частной собственности, наёмном труде, конкуренции и прибыли. Его сила заключалась в том, что предприниматель был заинтересован снижать издержки, внедрять машины и расширять рынок. Поэтому капитализм быстрее старых хозяйственных форм накапливал капитал и ускорял промышленный рост.</p>
+                     <p><strong>• Идейная основа.</strong> Адам Смит в «Богатстве народов» (1776) объяснял рынок через разделение труда и «невидимую руку»: частный интерес при конкуренции может работать на общее богатство. Давид Рикардо развил идею свободной торговли и сравнительных преимуществ. Государству отводилась роль «ночного сторожа»: оборона, правосудие, защита собственности и общественные блага.</p>
+                     <p><strong>• Laissez-faire.</strong> Принцип «позвольте делать» означал минимальное вмешательство государства в экономику, свободу торговли и предпринимательства. В Англии символом этого курса стала отмена «Хлебных законов» в 1846 г., выгодная промышленникам и городскому населению. Для буржуазии laissez-faire был способом убрать феодальные ограничения и ускорить модернизацию.</p>
+                     <p><strong>• Противоречие модели.</strong> Свободный рынок действительно ускорял рост, но не решал вопрос социальной защиты. Конкуренция давила на зарплаты, фабриканты удлиняли рабочий день, широко применялись женский и детский труд, охрана труда почти отсутствовала. Так рыночная свобода для предпринимателя часто оборачивалась зависимостью и бедностью для рабочего.</p>
+                     <p><strong>• Общественная реакция.</strong> Ответом стали чартизм 1838-1850 гг., тред-юнионы, требования избирательных прав и фабричного законодательства. Параллельно возникали социалистические учения: от утопистов Сен-Симона, Фурье и Оуэна до марксизма. Рабочий вопрос постепенно заставил государства перейти от чистого невмешательства к регулированию.</p>
+                     <p><strong>• Значение.</strong> Капитализм создал массовое производство, банки, биржи, акционерные общества и мировой рынок. Но именно его социальные издержки сделали XIX век эпохой не только промышленного роста, но и борьбы за права рабочих, политическое представительство и социальные реформы.</p>`,
+                    "Итог: laissez-faire помог капитализму быстро развиваться, но его социальные противоречия показали необходимость рабочего движения и постепенного государственного регулирования."
+                )
+            },
+            {
+                id: "b34",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 34. США в І половине XIX в. Региональное развитие. «Предначертание судьбы». Доктрина Монро",
+                content: compileContent(
+                    "США первой половины XIX века расширялись на Запад под лозунгом «предначертания судьбы», но новые земли обострили вопрос о рабстве и будущий конфликт Севера и Юга.",
+                    "1775-1783; 1820-1830; 1820-1840; 1829-1837; 1846-1848; 1848-1849",
+                    "Контекст; Региональные модели; Технологии и фронтир; Доктрина Монро; Территориальная экспансия; Рабство на новых землях",
+                    `<p><strong>• Контекст.</strong> После Войны за независимость и Конституции 1787 г. США быстро укрепляли федеративное государство. В 1820-1830-е гг. расширялось избирательное право для белых мужчин, складывалась «джексоновская демократия» и массовая партийная политика. Однако демократизация не распространялась на рабов и коренное население.</p>
+                     <p><strong>• Две региональные модели.</strong> Северо-Восток развивал промышленность, банки, торговлю и наёмный труд. Юг опирался на плантации, рабство и экспорт хлопка; после хлопкоочистительной машины Э. Уитни хлопковая экономика резко выросла. Запад был зоной фермерского освоения и постоянного продвижения границы. Эти регионы нуждались в разных тарифах, разной рабочей силе и разной политике государства.</p>
+                     <p><strong>• Технологии и фронтир.</strong> Пароход Фултона, телеграф Морзе, жатка Маккормика, железные дороги и принцип взаимозаменяемых деталей ускоряли освоение пространства. Фронтир формировал культ самостоятельного человека и веру в особую миссию США, но продвижение на Запад сопровождалось вытеснением индейцев и конфликтами за землю.</p>
+                     <p><strong>• Доктрина Монро.</strong> В 1823 г. США заявили, что европейские державы не должны вмешиваться в дела Американского континента. Первоначально это было оборонительное заявление молодой республики, но позднее доктрина стала идеологическим обоснованием особой роли США в Западном полушарии.</p>
+                     <p><strong>• «Предначертание судьбы» и экспансия.</strong> Идея Manifest Destiny оправдывала расширение США как якобы историческую миссию. Луизианская покупка 1803 г. удвоила территорию; затем последовали Флорида, аннексия Техаса, Орегон и война с Мексикой 1846-1848 гг., после которой США получили огромные земли на Западе.</p>
+                     <p><strong>• Главное противоречие.</strong> Каждая новая территория ставила вопрос: будет она свободной или рабовладельческой? Компромиссы временно сдерживали конфликт, но не устраняли его. Поэтому территориальный рост усиливал США как державу и одновременно приближал столкновение индустриального Севера и плантационного Юга.</p>`,
+                    "Итог: расширение США создало континентальную державу, но спор о рабстве на новых землях превратил территориальный рост в путь к Гражданской войне."
+                )
+            },
+            {
+                id: "b35",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 35. Гражданская война в США 1861-1865. Реконструкция Юга. Линкольн и Грант",
+                content: compileContent(
+                    "Гражданская война в США была конфликтом двух моделей развития: индустриального Севера и плантационного рабовладельческого Юга, а её итогом стали сохранение Союза и отмена рабства.",
+                    "12 апреля 1861 г; 17 сентября 1862; 1 января 1863 г; 3 июля 1863; 4 июля 1863; 19 ноября 1863",
+                    "Две модели развития; Раскол Союза; Силы сторон; Ход войны; Освобождение рабов; Реконструкция и значение",
+                    `<p><strong>• Причины.</strong> Война была не только спором о рабстве как моральной проблеме, а столкновением двух хозяйственных моделей. Север развивал промышленность, свободный наёмный труд, банки, железные дороги и протекционизм. Юг держался на плантациях, рабском труде, экспорте хлопка и свободной торговле. Новые западные территории обостряли вопрос: будут они свободными или рабовладельческими.</p>
+                     <p><strong>• Раскол Союза.</strong> Победа Авраама Линкольна в 1860 г. показала Югу, что распространение рабства могут остановить политически. Южная Каролина первой вышла из Союза, затем за ней последовали другие штаты; возникла Конфедерация во главе с Джефферсоном Дэвисом. Обстрел форта Самтер 12 апреля 1861 г. превратил политический кризис в войну.</p>
+                     <p><strong>• Силы сторон.</strong> Север имел больше населения, промышленности, флота и железных дорог, поэтому мог вести войну на истощение. Юг рассчитывал на оборону, военный талант генералов и «хлопковую дипломатию» - надежду, что Англия и Франция поддержат его из-за зависимости от хлопка. Стратегия Севера «Анаконда» предполагала блокаду побережья и контроль над Миссисипи.</p>
+                     <p><strong>• Ход войны.</strong> В 1861-1862 гг. Север терпел неудачи, а армия Роберта Ли удерживала инициативу. Перелом начался после Энтитэма 17 сентября 1862 г., а окончательно закрепился в 1863 г.: Геттисберг остановил наступление Юга, а взятие Виксберга дало Северу контроль над Миссисипи. Война стала тотальной: разрушались коммуникации, экономика и политическая воля противника.</p>
+                     <p><strong>• Линкольн и отмена рабства.</strong> Прокламация об освобождении рабов 1 января 1863 г. придала войне новый смысл: теперь Север воевал не только за сохранение Союза, но и против рабства. XIII поправка 1865 г. окончательно отменила рабство; XIV и XV поправки закрепили гражданство и избирательные права для бывших рабов.</p>
+                     <p><strong>• Реконструкция и последствия.</strong> Реконструкция Юга должна была встроить бывшие мятежные штаты и освобождённых рабов в новую политическую систему. Формально рабство исчезло, но сопротивление белого Юга, сегрегация и расовое насилие сохранили глубокие проблемы. Экономически победа Севера открыла путь единому рынку, протекционизму и бурному индустриальному росту США.</p>`,
+                    "Итог: Гражданская война сохранила США как единое государство, уничтожила рабство и закрепила победу индустриальной модели развития."
+                )
+            },
+            {
+                id: "b36",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 36. Скачок промышленного развития США. «Позолоченный век». «Прогрессивная эра»",
+                content: compileContent(
+                    "США в конце XIX века стали промышленным лидером, а затем перешли от почти свободного капитализма «позолоченного века» к умеренному регулированию прогрессивной эры.",
+                    "1 мая 1886; 1865-1914 гг; 1865-1914; 1901-1909; 1909-1913; 1913-1921",
+                    "Предпосылки рывка; Монополии; Социальная цена; Прогрессивная эра; Регулирование; Итоги",
+                    `<p><strong>• Предпосылки рывка.</strong> После Гражданской войны США получили единый рынок, огромные природные ресурсы, защищённую тарифами промышленность и массовую иммиграцию как источник рабочей силы. Железные дороги связали континент, а первая трансконтинентальная магистраль 1869 г. ускорила освоение Запада. К 1894 г. США вышли на первое место в мире по промышленному производству.</p>
+                     <p><strong>• Отрасли и крупный капитал.</strong> Сталь Карнеги, нефть Рокфеллера, банки Моргана, железные дороги Вандербильта и электротехника General Electric стали символами новой экономики. Крупные корпорации снижали издержки и ускоряли рост, но одновременно вытесняли конкурентов. Так возникли тресты и монополии, а свободный капитализм начал сам порождать концентрацию власти в руках немногих.</p>
+                     <p><strong>• «Позолоченный век».</strong> Выражение подчёркивало контраст между блеском богатства и социальными язвами. Города росли, но вместе с ними росли бедность, коррупция, небезопасный труд, забастовки и разрыв между магнатами и рабочими. Антитрестовский закон Шермана 1890 г. появился как реакция на монополии, но сначала применялся слабо.</p>
+                     <p><strong>• Почему понадобились реформы.</strong> К началу XX в. стало ясно, что один рынок не решает проблемы монополий, качества продуктов, условий труда и коррупции. Журналисты-«разгребатели грязи» вскрывали злоупотребления бизнеса и политиков, а средний класс требовал более честных правил игры. Так возникла прогрессивная эра.</p>
+                     <p><strong>• Прогрессивная эра.</strong> При Теодоре Рузвельте усилилась антитрестовская политика и контроль над железными дорогами; при Тафте продолжались судебные преследования монополий; при Вильсоне были созданы Федеральная резервная система и Федеральная торговая комиссия. Государство не отменяло капитализм, но вводило правила, чтобы ограничить крайности laissez-faire.</p>
+                     <p><strong>• Значение.</strong> К 1914 г. США стали индустриальным гигантом и всё активнее входили в мировую политику. Прогрессивные реформы не уничтожили расовую сегрегацию и социальное неравенство, но показали переход от свободного капитализма XIX века к регулируемой рыночной системе XX века.</p>`,
+                    "Итог: промышленный рывок сделал США мировой экономической силой, а прогрессивная эра показала необходимость ограничивать монополии и социальные издержки рынка."
+                )
+            },
+            {
+                id: "b37",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 37. Объединение Италии. «Рисорджименто». «Молодая Италия». Гарибальди",
+                content: compileContent(
+                    "объединение Италии стало результатом сочетания дипломатии Пьемонта «сверху» и революционной энергии Гарибальди и национального движения «снизу».",
+                    "7 сентября 1860; 17 марта 1861 г; 20 сентября 1870 г; 1848-1849 гг; 1805-1872; 1848-1849",
+                    "Раздробленность; Рисорджименто; Мадзини; Кавур и Пьемонт; Гарибальди; Итоги",
+                    `<p><strong>• Причины движения за объединение.</strong> После Венского конгресса 1815 г. Италия оставалась раздробленной: часть территорий контролировала Австрия, центр занимало Папское государство, юг - Королевство Обеих Сицилий. Раздробленность мешала единому рынку, политической модернизации и национальному самосознанию. Поэтому объединение стало задачей буржуазии, интеллигенции и либерального дворянства.</p>
+                     <p><strong>• Рисорджименто.</strong> Рисорджименто означало национальное «возрождение» Италии. Оно сочетало культурное пробуждение, борьбу против австрийского влияния и стремление к единому государству. Внутри движения спорили две линии: революционно-республиканская «снизу» и умеренно-монархическая «сверху».</p>
+                     <p><strong>• Мадзини и революционная линия.</strong> Джузеппе Мадзини создал «Молодую Италию» в 1831 г. и выступал за единую республику, народное восстание и принцип «Бог и народ». Попытки восстаний и революции 1848-1849 гг. потерпели поражение, но они распространили идею национального единства и подготовили массовую поддержку объединения.</p>
+                     <p><strong>• Кавур и Пьемонт.</strong> Реальным центром объединения стал Пьемонт во главе с королём Виктором Эммануилом II и премьером Кавуром. Кавур модернизировал государство, развивал железные дороги, армию и дипломатию. Он понимал, что Австрию нельзя вытеснить только восстаниями, поэтому добивался союза с Францией и международной поддержки.</p>
+                     <p><strong>• Гарибальди и юг.</strong> Джузеппе Гарибальди дал объединению революционную энергию. В 1860 г. его «тысяча» высадилась на Сицилии, разгромила войска Бурбонов и двинулась к Неаполю. Гарибальди мог попытаться создать республику, но передал завоёванные земли Виктору Эммануилу II, что позволило соединить движение снизу с монархическим объединением.</p>
+                     <p><strong>• Итоги и проблемы.</strong> В 1861 г. было провозглашено Итальянское королевство; в 1870 г. присоединён Рим. Но объединение не решило все проблемы: сохранялся разрыв между индустриальным Севером и аграрным Югом, конфликт с папством и слабая национальная интеграция. Поэтому после создания государства возникла задача «создать итальянцев».</p>`,
+                    "Итог: Италия объединилась благодаря союзу дипломатии Пьемонта и революционного движения, но новое государство унаследовало глубокие региональные и социальные противоречия."
+                )
+            },
+            {
+                id: "b38",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 38. Объединение Германии. Бисмарк. Франко-прусская война. Германская империя",
+                content: compileContent(
+                    "Германия объединилась «сверху» вокруг Пруссии через войны и политику Бисмарка, что усилило милитаризм и резко изменило баланс сил в Европе.",
+                    "3 июля 1866; 2 сентября 1870; 28 мая 1871 г; 10 мая 1871; 18 января 1871 г; 1848-1849 гг",
+                    "Раздробленность; Провал 1848 года; Бисмарк и Realpolitik; Войны объединения; Империя; Значение",
+                    `<p><strong>• Причины объединения.</strong> Германский союз после 1815 г. включал десятки государств, а главными соперниками внутри него были Австрия и Пруссия. Экономическая интеграция через Цольферейн 1834 г. показала выгоду единого рынка, но политическое единство оставалось нерешённым. Буржуазия хотела общего рынка, националисты - единого государства, а Пруссия стремилась возглавить этот процесс.</p>
+                     <p><strong>• Почему революция не решила задачу.</strong> Франкфуртский парламент 1848-1849 гг. пытался объединить Германию конституционным путём, но не имел реальной силы. Прусский король отказался принять «корону из рук революции», и либеральный вариант объединения провалился. Это открыло путь объединению не снизу, а через монархию, армию и дипломатию.</p>
+                     <p><strong>• Бисмарк и метод.</strong> Отто фон Бисмарк стал премьер-министром Пруссии в 1862 г. и действовал в логике Realpolitik: важны не декларации, а соотношение сил. Его фраза о «железе и крови» выражала ставку на армию, промышленность, железные дороги и точный дипломатический расчёт. Военная реформа Роона и стратегия Мольтке сделали Пруссию готовой к войнам.</p>
+                     <p><strong>• Войны объединения.</strong> Датская война 1864 г. дала повод решить вопрос Шлезвига и Гольштейна. Австро-прусская война 1866 г. вывела Австрию из германских дел и позволила создать Северогерманский союз. Франко-прусская война 1870-1871 гг. объединила южногерманские государства вокруг Пруссии на волне национального подъёма против Франции.</p>
+                     <p><strong>• Германская империя.</strong> 18 января 1871 г. в Версале была провозглашена Германская империя, а прусский король стал кайзером. Это было объединение «сверху»: парламент существовал, но ключевую роль сохраняли монархия, армия, бюрократия и прусская элита. Германия быстро стала крупнейшей промышленной державой Европы.</p>
+                     <p><strong>• Последствия.</strong> Появление сильной Германии изменило европейский баланс: Франция потеряла Эльзас и Лотарингию и стремилась к реваншу, а другие державы начали учитывать новую мощь Берлина. Авторитарный и военный характер объединения усилил милитаристские традиции, которые стали одним из факторов напряжённости перед Первой мировой войной.</p>`,
+                    "Итог: объединение Германии создало мощную индустриальную империю в центре Европы, но авторитарный путь «железа и крови» усилил милитаризм и будущие международные противоречия."
+                )
+            },
+            {
+                id: "b39",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 39. Узлы международных противоречий на рубеже XIX-XX вв. Балканы. Союзнические коалиции",
+                content: compileContent(
+                    "к началу XX века Балканы превратились из локальной зоны конфликтов в спусковой механизм мировой войны из-за интересов великих держав и системы союзных блоков.",
+                    "19 февраля 1878 г; 28 июня 1914 г; 1891-1894 гг; 1877-1878; 1912-1913; 1899-1902",
+                    "Балканский узел; Восточный вопрос; Кризисы 1878-1913; Союзные блоки; Сараево; Значение",
+                    `<p><strong>• Почему Балканы стали опасной зоной.</strong> Османская империя слабела, а её европейские владения становились объектом соперничества. Россия поддерживала славянские народы и стремилась к влиянию у проливов; Австро-Венгрия боялась сербского национализма и хотела расширяться на юг; Германия поддерживала Вену; Англия и Франция следили за балансом сил. Поэтому каждый балканский конфликт затрагивал интересы великих держав.</p>
+                     <p><strong>• Русско-турецкая война и Берлинский пересмотр.</strong> После восстаний на Балканах Россия победила Турцию в войне 1877-1878 гг. Сан-Стефанский мир создавал большую Болгарию и усиливал влияние России. Но Берлинский конгресс 1878 г. урезал эти результаты в пользу Австро-Венгрии и Англии. Для России это стало дипломатическим разочарованием, а для Балкан - источником новых обид.</p>
+                     <p><strong>• Кризисы начала XX века.</strong> Аннексия Боснии и Герцеговины Австро-Венгрией в 1908 г. ударила по Сербии и России. Балканские войны 1912-1913 гг. почти вытеснили Турцию из Европы, но усилили Сербию и рассорили бывших союзников. Регион стал ещё более нестабильным: национальные претензии не совпадали с границами.</p>
+                     <p><strong>• Союзные блоки.</strong> Локальные конфликты стали опасны из-за блоковой системы. Тройственный союз объединял Германию, Австро-Венгрию и Италию; Антанта сложилась через франко-русский союз, англо-французское и англо-русское сближение. Теперь конфликт одной пары государств мог втянуть их союзников.</p>
+                     <p><strong>• Сараевский кризис.</strong> 28 июня 1914 г. убийство эрцгерцога Франца Фердинанда в Сараево стало поводом для давления Австро-Венгрии на Сербию. Но причина мировой войны была глубже: Балканы соединяли национализм, распад империй, интересы великих держав и союзные обязательства.</p>
+                     <p><strong>• Значение.</strong> Балканы показали, что к 1914 г. европейская дипломатия уже не умела локализовать кризисы. Система союзов, гонка вооружений и страх потерять престиж превратили региональный конфликт в общеевропейскую, а затем мировую войну.</p>`,
+                    "Итог: Балканы стали спусковым механизмом Первой мировой войны, потому что местные национальные конфликты были связаны с интересами великих держав и союзными обязательствами."
+                )
+            },
+            {
+                id: "b40",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 40. Китай и Европа XVIII-XIX вв. Опиумные войны. Тайпины и боксёры",
+                content: compileContent(
+                    "кризис Цинского Китая развивался по цепочке: торговый дисбаланс с Европой, опиумная торговля, военное поражение, неравноправные договоры и внутренние восстания.",
+                    "1840-1842; 1856-1860; 1850-1864; 1860-1890; 1894-1895; 1898-1901",
+                    "Кантонская система; Опиум; Неравноправные договоры; Внутренние восстания; Попытки самоусиления; Итог кризиса",
+                    `<p><strong>• Исходное положение.</strong> Цинский Китай в XVIII в. был огромной империей с сильной традиционной бюрократией и ограниченной внешней торговлей через Кантон. Европа покупала чай, шёлк и фарфор, но Китай почти не нуждался в европейских товарах. Поэтому серебро уходило в Китай, а Британия искала способ изменить торговый баланс.</p>
+                     <p><strong>• Опиум как механизм давления.</strong> Британия стала ввозить в Китай опиум из Индии. Это давало прибыль и разворачивало поток серебра обратно, но разрушало китайское общество: росла наркомания, падали доходы государства, усиливалась коррупция. Когда комиссар Линь Цзэсюй в 1839 г. уничтожил партии опиума, Британия использовала это как повод для войны.</p>
+                     <p><strong>• Опиумные войны и договоры.</strong> В Первой Опиумной войне 1840-1842 гг. военно-техническое превосходство Британии заставило Китай подписать Нанкинский договор: Гонконг, открытые порты, контрибуция, низкие тарифы и экстерриториальность. Вторая Опиумная война 1856-1860 гг. расширила зависимость: новые порты, право миссионеров, легализация опиума и новые уступки державам.</p>
+                     <p><strong>• Внутренний кризис.</strong> Внешнее давление совпало с внутренними восстаниями. Тайпинское восстание 1850-1864 гг. потрясло империю, показав слабость власти и недовольство низов. Боксёрское восстание 1898-1901 гг. было антизападной реакцией на миссионеров, иностранные концессии и унижение Китая, но его поражение привело к новым выплатам и контролю держав.</p>
+                     <p><strong>• Попытки самоусиления.</strong> Китайские элиты пытались заимствовать западную технику, строить арсеналы, флот и предприятия, но не меняли глубоко политическую систему. Поражение от Японии в 1894-1895 гг. показало, что частичная модернизация без институциональных реформ недостаточна.</p>
+                     <p><strong>• Значение.</strong> Китай не стал прямой колонией, но оказался полуколониальной страной: державы контролировали порты, торговлю, концессии и часть таможенных доходов. Эта зависимость подорвала престиж династии Цин и подготовила революционные движения начала XX века.</p>`,
+                    "Итог: Опиумные войны превратили торговый конфликт в систему неравноправных договоров, которая разрушила изоляцию Китая и углубила кризис Цинской империи."
+                )
+            },
+            {
+                id: "b41",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 41. Япония XIX в. «Открытие». Мэйдзи. Русско-японская война",
+                content: compileContent(
+                    "насильственное открытие Японии вызвало страх колониальной зависимости, поэтому реформы Мэйдзи создали модернизированное государство, которое само перешло к империализму.",
+                    "20 декабря 1904; 15 мая 1905; 23 августа 1905; 1905-1907 гг; 1853-1854; 1868-1869",
+                    "Закрытая страна; Насильственное открытие; Реставрация Мэйдзи; Механизм реформ; Империализм; Русско-японская война",
+                    `<p><strong>• Закрытая страна.</strong> При сёгунате Токугава Япония жила в режиме изоляции: власть сёгуна, символический император, жёсткая сословная система и ограниченная торговля через Нагасаки. Такая система сохраняла порядок, но делала страну уязвимой перед западными державами, уже навязавшими Китаю неравноправные договоры.</p>
+                     <p><strong>• «Открытие» и страх зависимости.</strong> В 1853-1854 гг. эскадра М. Перри заставила Японию открыть порты. Затем последовали неравные договоры с западными державами: экстерриториальность, фиксированные тарифы, ограничение суверенитета. Японские элиты увидели риск повторить судьбу Китая, поэтому модернизация стала вопросом выживания.</p>
+                     <p><strong>• Реставрация Мэйдзи.</strong> Кризис сёгуната вызвал движение «почитание императора, изгнание варваров» и борьбу юго-западных кланов против старой власти. В 1868 г. император Муцухито был восстановлен в реальной власти, Эдо стал Токио, а реформаторы получили возможность перестроить государство сверху.</p>
+                     <p><strong>• Механизм реформ.</strong> Были ликвидированы феодальные княжества, введены префектуры, всеобщая воинская повинность, современная армия, школа, новая налоговая система и промышленная политика. Государство само строило предприятия, железные дороги и флот, отправляло студентов за границу и заимствовало западные институты, сохраняя при этом сильную монархическую власть.</p>
+                     <p><strong>• Переход к империализму.</strong> Модернизация быстро дала внешнеполитический результат: победа над Китаем в 1894-1895 гг. усилила Японию в Корее и на Тайване. Страна, которая боялась колониальной зависимости, сама начала строить империю, потому что нуждалась в рынках, ресурсах и статусе великой державы.</p>
+                     <p><strong>• Русско-японская война.</strong> Соперничество России и Японии за Корею и Маньчжурию привело к войне 1904-1905 гг. Победы Японии, особенно Цусима, показали успех модернизации и стали шоком для Европы. Для России поражение стало одним из факторов революции 1905-1907 гг.</p>`,
+                    "Итог: реформы Мэйдзи спасли Японию от полуколониальной зависимости и превратили её в индустриальную империю, способную победить европейскую державу."
+                )
+            },
+            {
+                id: "b42",
+                category: "Мировая история XIX - начала ХХ века",
+                title: "Билет 42. Мировая колониальная система. Формы зависимости. Идеология колониализма",
+                content: compileContent(
+                    "колониальная система давала метрополиям сырьё, рынки и престиж, а зависимым странам - инфраструктуру, встроенную в вывоз ресурсов и политическую зависимость.",
+                    "1884-1885 гг; 1919-1920 гг; 1810-1820; 1884-1885; 1919-1920; 1873-1874",
+                    "Этапы; Формы зависимости; Идеология; Экономический механизм; Последствия; Сопротивление",
+                    `<p><strong>• Этапы колониализма.</strong> Первый этап связан с Великими географическими открытиями, завоеванием Америки и работорговлей. Второй - с торговым колониализмом XVIII - середины XIX в., когда Британия укрепляла контроль над Индией. Третий этап во второй половине XIX в. - эпоха империализма: индустриальным державам были нужны сырьё, рынки, военно-морские базы и престиж.</p>
+                     <p><strong>• Формы зависимости.</strong> Колония находилась под прямым управлением метрополии; протекторат сохранял местную власть, но внешняя политика и оборона контролировались извне; доминионы имели самоуправление, оставаясь связанными с Британской империей. Были и полуколонии: формально независимые страны, фактически зависимые через концессии, займы, таможни и иностранные войска.</p>
+                     <p><strong>• Идеология колониализма.</strong> Завоевания оправдывали «цивилизаторской миссией», расизмом, социальным дарвинизмом, миссионерством и идеей национального престижа. Экономические критики вроде Дж. Гобсона показывали, что за красивыми лозунгами стояли интересы капитала, рынков и сырья.</p>
+                     <p><strong>• Экономический механизм.</strong> Метрополии строили железные дороги, порты, телеграф и административные учреждения, но эта инфраструктура чаще обслуживала вывоз сырья и контроль над территорией. Колонии поставляли хлопок, каучук, чай, металлы и рабочую силу, а покупали промышленные товары метрополий. Поэтому модернизация была односторонней и закрепляла зависимость.</p>
+                     <p><strong>• Последствия для Азии и Африки.</strong> Колониализм разрушал ремёсла, менял аграрные отношения, усиливал голод и социальное расслоение, проводил искусственные границы и унижал местные культуры. При этом он создавал новые города, школы, дороги и слой образованной элиты, который позднее стал базой антиколониальных движений.</p>
+                     <p><strong>• Сопротивление и значение.</strong> Колониальная система вызывала восстания, реформаторские движения и национализм. К началу XX в. она охватывала огромные территории, но внутренне была нестабильной: эксплуатация и расовое неравенство неизбежно порождали борьбу за независимость.</p>`,
+                    "Итог: колониальная система ускоряла развитие метрополий, но зависимые страны включала в мировой рынок неравноправно, что стало основой будущей антиколониальной борьбы."
+                )
+            },
+            {
+                id: "b43",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 43. І Мировая война. Брестский мир",
+                content: compileContent(
+                    "Первая мировая война выросла из империалистических противоречий и стала тотальной войной, а Брестский мир стал для России тяжёлой ценой выхода из неё.",
+                    "28 июня 1914 г; 6 апреля 1917; 9 ноября 1918 г; 11 ноября 1918 г; 3 марта 1918 г; 13 ноября 1918 г",
+                    "Причины; Позиционная война; Россия в войне; Революция 1917 года; Брестские переговоры; Последствия",
+                    `<p><strong>• Причины войны.</strong> Войну вызвали империалистические противоречия: борьба за колонии и рынки, англо-германское морское соперничество, реваншизм Франции за Эльзас и Лотарингию, кризис Османской империи, Балканы и система союзных обязательств. Сараевское убийство 28 июня 1914 г. стало поводом, но не глубинной причиной.</p>
+                     <p><strong>• Ход и характер войны.</strong> План быстрой победы Германии провалился после Марны в 1914 г., и война стала позиционной, затяжной и тотальной. Фронты требовали мобилизации промышленности, продовольствия, транспорта и населения. Верден, Сомма, Ипр и Брусиловский прорыв показали новый тип войны: огромные потери при ограниченном продвижении.</p>
+                     <p><strong>• Россия и истощение.</strong> Российская армия несла тяжёлые потери, а «Великое отступление» 1915 г. подорвало доверие к власти. Военные неудачи сочетались с продовольственным кризисом, транспортными сбоями и падением авторитета монархии. Война ускорила внутренний кризис империи.</p>
+                     <p><strong>• Революция 1917 года.</strong> Февральская революция разрушила старую систему управления, но Временное правительство продолжало войну. Армия разлагалась, дисциплина падала, а общество требовало мира. Большевики пришли к власти с лозунгом немедленного мира, поэтому выход из войны стал для них вопросом удержания власти.</p>
+                     <p><strong>• Брестский мир.</strong> Переговоры в Брест-Литовске шли в условиях слабости новой власти и наступления Германии. 3 марта 1918 г. Советская Россия подписала тяжёлый договор: потеряла огромные территории, население, ресурсы и промышленный потенциал. Для противников большевиков это стало символом национального унижения.</p>
+                     <p><strong>• Последствия.</strong> Брестский мир позволил большевикам выйти из мировой войны и сосредоточиться на удержании власти в Гражданской войне. После поражения Германии договор был аннулирован, но политическая цена уже была уплачена: выход из войны углубил раскол общества и усилил антибольшевистское сопротивление.</p>`,
+                    "Итог: Первая мировая война разрушила старый европейский порядок, а Брестский мир стал для России тяжёлой ценой выхода из войны и сохранения советской власти."
+                )
+            },
+            {
+                id: "b44",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 44. Итоги І Мировой. Версальско-Вашингтонская система. Лига Наций",
+                content: compileContent(
+                    "Первая мировая разрушила старые империи, а Версальско-Вашингтонская система попыталась закрепить новый порядок, но оставила реваншизм и нерешённые противоречия.",
+                    "28 июня 1919; 10 января 1920 г; 1921-1922 гг; 27 ноября 1919; 4 июня 1920; 10 августа 1920",
+                    "Парижская мирная конференция; «14 пунктов» Вильсона; Версальский договор с Германией; Договоры с союзниками Германии; Лига Наций; Вашингтонская конференция (ноябрь 1921 - февраль 1922)",
+                    `<p><strong>• Общие итоги войны.</strong> Первая мировая уничтожила четыре империи: Российскую, Германскую, Австро-Венгерскую и Османскую. На карте Европы появились новые государства, но границы часто проводились с учётом интересов победителей, а не всех национальных противоречий. Поэтому мир с самого начала был нестабильным.</p>
+                     <p><strong>• Парижская конференция.</strong> В 1919 г. победители решали судьбу побеждённых без полноценного участия Германии и без России, где шла Гражданская война. «Большая четвёрка» стремилась совместить идеализм Вильсона, безопасность Франции, интересы Британской империи и претензии Италии. На практике принципы самоопределения применялись непоследовательно.</p>
+                     <p><strong>• Версальский договор.</strong> Договор 28 июня 1919 г. возложил на Германию ответственность за войну, ограничил армию, отнял территории и предусматривал репарации. Для Франции это было средство безопасности, но для Германии - унижение. Именно Версаль стал важнейшим источником германского реваншизма.</p>
+                     <p><strong>• Новая карта Европы.</strong> Договоры с Австрией, Венгрией, Болгарией и Турцией закрепили распад старых империй и появление новых государств. Но вместе с этим возникли национальные меньшинства, спорные границы и реваншистские настроения, особенно в Германии и Венгрии.</p>
+                     <p><strong>• Лига Наций.</strong> Лига должна была предотвращать войны через коллективную безопасность, переговоры, мандатную систему и разоружение. Но она была слабой: США не вступили, механизм принуждения был ограничен, а великие державы часто действовали исходя из собственных интересов. Поэтому Лига не смогла остановить агрессоров 1930-х годов.</p>
+                     <p><strong>• Вашингтонская система.</strong> Вашингтонская конференция 1921-1922 гг. закрепила баланс сил в Тихом океане и ограничение морских вооружений. Она сдерживала соперничество США, Великобритании и Японии, но не сняла борьбу за влияние в Китае и на Тихом океане. Внешне система выглядела как мирный порядок, но внутри сохраняла напряжение.</p>`,
+                    "Итог: Версальско-Вашингтонская система закрепила победу Антанты, но из-за реваншизма, слабости Лиги Наций и нерешённых противоречий стала нестабильной основой межвоенного мира."
+                )
+            },
+            {
+                id: "b45",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 45. Индия в составе Британской империи. Махатма Ганди. Провозглашение независимости",
+                content: compileContent(
+                    "Индия прошла путь от британской колониальной зависимости к независимости через национальное движение и ненасильственное сопротивление Ганди.",
+                    "13 апреля 1919 г; 6 апреля 1930; 14 августа 1947; 15 августа 1947; 30 января 1948 г; 26 января 1950 г",
+                    "Колониальная система; Национальное движение; Ганди; Массовые кампании; Вторая мировая война; Независимость и раздел",
+                    `<p><strong>• Колониальная зависимость.</strong> Британия использовала Индию как источник сырья, рынок сбыта и военный ресурс. Колониальная экономика разрушала традиционные ремёсла, особенно текстиль, усиливала сырьевую ориентацию и зависимость от британской торговли. Железные дороги, право, образование и бюрократия создавались прежде всего для управления империей, но одновременно связали страну и помогли формированию национальной элиты.</p>
+                     <p><strong>• Возникновение национального движения.</strong> Английское образование и новая интеллигенция породили слой людей, способных говорить с властью на языке прав и представительства. Индийский национальный конгресс, созданный в 1885 г., сначала действовал умеренно, через петиции, но постепенно стал центром борьбы за самоуправление. Раздел Бенгалии 1905 г. вызвал бойкот английских товаров и движение свадеши.</p>
+                     <p><strong>• Ганди и новый метод.</strong> Махатма Ганди превратил борьбу за независимость в массовое ненасильственное движение. Его методы - сатьяграха, гражданское неповиновение, бойкот британских товаров, отказ сотрудничать с колониальной администрацией. Главное значение Ганди в том, что он вовлёк в политику миллионы крестьян, ремесленников и горожан, а не только образованную элиту.</p>
+                     <p><strong>• Массовые кампании.</strong> После расстрела в Амритсаре 13 апреля 1919 г. доверие к британской власти резко упало. В 1930 г. Соляной поход показал силу символического протеста: нарушение соляной монополии стало понятным актом сопротивления для всей страны. Кампании Ганди делали британское правление политически и морально всё менее устойчивым.</p>
+                     <p><strong>• Почему Британия ушла.</strong> После Второй мировой войны Британия была экономически ослаблена, а удержание Индии требовало всё больших сил. Индийцы воевали в составе британской армии, национальное движение усилилось, а международная атмосфера стала антиколониальной. Одновременно рос конфликт между Индийским национальным конгрессом и Мусульманской лигой.</p>
+                     <p><strong>• Независимость и раздел.</strong> В 1947 г. Британская Индия была разделена на Индию и Пакистан. Индия получила независимость 15 августа, Пакистан - 14 августа. Раздел сопровождался массовым насилием, миграциями и гибелью людей, что показало тяжёлую цену деколонизации.</p>`,
+                    "Итог: Индия прошла путь от колониальной зависимости к независимости, а Ганди сделал ненасильственное сопротивление главным символом антиколониальной борьбы."
+                )
+            },
+            {
+                id: "b46",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 46. Сунь Ятсен и Синьхайская революция. Эра милитаристов. Гоминьдан и КПК в 1920-1930-е гг.",
+                content: compileContent(
+                    "Синьхайская революция свергла монархию, но не решила проблему единства Китая, поэтому страну охватили милитаризм, борьба Гоминьдана и КПК и сопротивление японской агрессии.",
+                    "10 октября 1911 г; 1 января 1912 г; 1 июля 1921 г; 1 октября 1949 г; 1911-1912 гг; 1901-1908 гг",
+                    "Кризис Цин; Сунь Ятсен; Синьхайская революция; Милитаристы; Гоминьдан и КПК; Японская агрессия",
+                    `<p><strong>• Причины революции.</strong> Цинская империя слабела из-за внешнего давления, неравноправных договоров, поражений и неспособности провести глубокую модернизацию. Реформы 1901-1908 гг. были запоздалыми, а национальное недовольство росло. Китайцам становилось ясно, что старая монархия не способна защитить страну.</p>
+                     <p><strong>• Сунь Ятсен и программа.</strong> Сунь Ятсен предложил «три народных принципа»: национализм, народовластие и народное благосостояние. Его цель - свержение Цинов, республика и модернизация Китая. Созданный им Тунмэнхой стал основой будущего Гоминьдана.</p>
+                     <p><strong>• Синьхайская революция.</strong> 10 октября 1911 г. восстание в Учане запустило революцию, а 1 января 1912 г. была провозглашена Китайская Республика. Монархия пала, но революционеры не имели достаточной силы, чтобы удержать всю страну. Власть перешла к Юань Шикаю, который установил личную диктатуру и попытался восстановить монархию.</p>
+                     <p><strong>• Эра милитаристов.</strong> После смерти Юань Шикая Китай распался на сферы влияния военных правителей. Формально республика существовала, но реально провинции контролировали генералы, зависимые от армий, налогов и внешней поддержки. Это показало: свержение монархии не равно созданию единого государства.</p>
+                     <p><strong>• Гоминьдан и КПК.</strong> В 1921 г. была создана КПК. Гоминьдан и коммунисты сначала сотрудничали в едином фронте и Северном походе, чтобы объединить страну и разгромить милитаристов. Но после укрепления власти Чан Кайши разорвал союз с коммунистами, начались репрессии и гражданский конфликт.</p>
+                     <p><strong>• КПК и японская угроза.</strong> КПК создавала советские районы, опираясь на крестьянство, а после поражений совершила Великий поход. Японская агрессия заставила Гоминьдан и КПК временно объединиться против общего врага, но их политическое соперничество сохранилось и определило дальнейшую историю Китая.</p>`,
+                    "Итог: китайская революция ликвидировала монархию, но не решила проблему единства страны, поэтому Китай вступил в длительный период борьбы между Гоминьданом, КПК и милитаристами."
+                )
+            },
+            {
+                id: "b47",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 47. Мировой экономический кризис 1929-1933 гг. Американская модель. «Новый курс» Ф. Д. Рузвельта",
+                content: compileContent(
+                    "мировой кризис 1929-1933 годов показал слабость нерегулируемого рынка, а Новый курс Рузвельта усилил роль государства.",
+                    "24 октября 1929 г; 4 марта 1933 г; 1934-1936 гг; 1929-1932; 1934-1936; 1929-1933",
+                    "Начало кризиса; Причины; Глубина в США; Распространение в мире; Президент Г. Гувер (1929-1933); Ф. Д. Рузвельт и «Новый курс» (New Deal)",
+                    `<p><strong>• Начало кризиса.</strong> 24 октября 1929 г. («чёрный четверг») - крах Нью-Йоркской фондовой биржи; за месяц индекс Доу-Джонса упал почти втрое; к 1932 г. с 381 до 41 пункта (-89%). Кризис распространился на банковскую систему, промышленность, сельское хозяйство, мировую торговлю.</p>
+                     <p><strong>• Причины.</strong> Кризис перепроизводства; спекулятивный бум 1920-х (биржевые пирамиды, кредит); углубление неравенства доходов (низкий потребительский спрос при высокой производительности); слабое регулирование банков и биржи; протекционизм (тариф Смута-Хоули 1930 - обвал мировой торговли); послевоенные международные финансовые дисбалансы (репарации, военные долги); жёсткость золотого стандарта, передающего кризис от страны к стране.</p>
+                     <p><strong>• Глубина в США.</strong> Промышленное производство минус 46% (1929-1932). Безработица около 25% (12-15 млн чел.). Банкротство ~10 тыс. банков (около 40% от существовавших). Разорение фермеров; «Пыльный котёл» 1934-1936 гг. - экологическая катастрофа на Великих равнинах. Городские трущобы «Гувервилли». «Марш ветеранов» на Вашингтон 1932 г., разогнанный армией.</p>
+                     <p><strong>• Распространение в мире.</strong> Мировое промышленное производство минус 38%; мировая торговля минус 65%. Наиболее сильно пострадали США и Германия (наименее - СССР, развивавшийся в условиях изоляции и плановой индустриализации).</p>
+                     <p><strong>• Результаты.</strong> К 1937 г. частичное восстановление; «Рузвельтова рецессия» 1937-1938 (после преждевременного сокращения дефицитного финансирования). Полная ликвидация безработицы только с началом военных заказов 1939-1941. Безработица 1929 г. - 3%, 1933 г. - 25%, 1937 г. - 14%, 1941 г. - около 10%.</p>`,
+                    "Итог: кризис 1929-1933 годов показал слабость свободного рынка без регулирования, а Новый курс усилил роль государства в экономике США."
+                )
+            },
+            {
+                id: "b48",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 48. Мировой экономический кризис 1929-1933 гг. Германская модель. Экономическая доктрина фашизма",
+                content: compileContent(
+                    "в Германии мировой кризис разрушил Веймарскую систему, усилил нацистов и привёл к диктатуре с милитаризованной экономикой.",
+                    "30 января 1933 г; 27 февраля 1933; 30 июня 1934; 2 августа 1934; 1919-1933; 1924-1929",
+                    "Веймарская республика накануне кризиса; Удар кризиса; Политика Брюнинга; Установление диктатуры; Экономическая доктрина фашизма; Меры в нацистской Германии",
+                    `<p><strong>• Веймарская республика накануне кризиса.</strong> Республика (1919-1933) изначально хрупка: версальское бремя (репарации), гиперинфляция 1923 г. (4,2 трлн марок за доллар), путчи (Капповский 1920, Пивной 1923 Гитлер), радикалы справа и слева. Стабилизация 1924-1929 («золотые двадцатые») - благодаря плану Дауэса 1924 (американские кредиты и реструктуризация репараций) и Локарнским соглашениям 1925.</p>
+                     <p><strong>• Удар кризиса.</strong> Прекращение американских кредитов; банковский кризис 1931 г. (крах венского Credit-Anstalt). Безработица: 1929 г. - 1,3 млн, 1932 г. - 6 млн (33%). Промышленное производство минус 40%. Резкое обнищание; политическая радикализация.</p>
+                     <p><strong>• Политика Брюнинга.</strong> Канцлер Г. Брюнинг (1930-1932) - правительство, опирающееся не на парламентское большинство, а на чрезвычайные декреты президента (ст. 48 Конституции). Жёсткая дефляционная политика: сокращение зарплат, пенсий, государственных расходов, повышение налогов; цель добиться отмены репараций (достигнута, по сути, лишь в 1932 г.). Результат углубление кризиса и социального недовольства; рост поддержки НСДАП и КПГ.</p>
+                     <p><strong>• Подъём нацистов.</strong> НСДАП - Национал-социалистическая немецкая рабочая партия (А. Гитлер с 1921 г.). Электоральная динамика: май 1928 - 2,6%; сентябрь 1930 18,3%; июль 1932 - 37,4% (крупнейшая фракция); ноябрь 1932 - 33,1%. Социальная база: средний класс, мелкая буржуазия, ветераны, безработные, разочарованные демократией. Поддержка со стороны части крупного капитала и аристократии - как меньшего зла по сравнению с коммунизмом.</p>
+                     <p><strong>• 30 января 1933 г.</strong> Президент П. фон Гинденбург назначил Гитлера рейхсканцлером (по совету Папена, рассчитывавшего его «приручить»).</p>`,
+                    "Итог: в Германии кризис способствовал росту нацизма и переходу к милитаризованной экономике фашистского типа."
+                )
+            },
+            {
+                id: "b49",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 49. Тоталитарные режимы предвоенной Европы. Идеология фашизма и нацизма",
+                content: compileContent(
+                    "фашизм и нацизм были тоталитарными режимами, основанными на вождизме, насилии, контроле общества и агрессивной идеологии.",
+                    "1933-1934 гг; 1932-1934 гг; 1936-1939 гг; 1917-1923 гг; 1922-1926; 1933-1934",
+                    "Понятие тоталитаризма; Италия; Германия; Сходства и различия; Социальные корни",
+                    `<p><strong>• Понятие тоталитаризма.</strong> Х. Арендт («Истоки тоталитаризма» 1951), К. Фридрих и 3. Бжезинский («Тоталитарная диктатура и автократия» 1956): шесть классических признаков тоталитарного режима официальная всеобъемлющая идеология; единственная массовая партия во главе с вождём; террористический полицейский контроль; монополия на СМИ; монополия на вооружённые силы; централизованный контроль над экономикой. Дополнительно атомизация общества, мобилизация масс, культ вождя.</p>
+                     <p><strong>• Италия.</strong> Б. Муссолини - «Союз борьбы» (Fasci di combattimento) 1919 г.; марш на Рим (октябрь 1922) - король Виктор Эммануил III назначает Муссолини главой правительства. Постепенное оформление режима 1922-1926: закон «Об упорядочении прав и прерогатив главы правительства» 1925 г.; единственная партия 1926 г. Корпоративная система (палата фасций и корпораций вместо парламента, 1934). Расовые законы 1938 г.</p>
+                     <p><strong>• Германия.</strong> Нацистский режим в собственном смысле сложился в 1933-1934 гг. Идеология национал-социализма: расизм (нордическая раса, арии; антисемитизм как ключевой элемент), биологический детерминизм, программа «расовой гигиены» и эвтаназии «неполноценных» (программа Т4 1939); «жизненное пространство» (Lebensraum) на Востоке; «народное сообщество» (Volksgemeinschaft) - мифологическое единство арийцев, классовый мир; принцип фюрерства; антибольшевизм; антикапитализм риторический.</p>
+                     <p><strong>• Сходства и различия.</strong> Сходства: вождь, единственная партия, террор (СС, гестапо; ОВРА в Италии), культ силы, антимарксизм, антилиберализм, мобилизация. Различия: расовый компонент в нацизме был стержнем, в итальянском фашизме позднее заимствование; внешняя экспансия как самоцель у нацистов; разная роль государства (в фашизме государство высшая ценность; в нацизме раса, нация).</p>
+                     <p><strong>• Авторитарные режимы 1920-1930-х гг.</strong> Польша: Ю. Пилсудский государственный переворот 1926 г., «санация»; после его смерти 1935 - «правление полковников». Венгрия: М. Хорти регент с 1920 г. (формально монархия без короля); правый авторитаризм. Болгария: переворот 1934 г. Австрия: Э. Дольфус клерикально-фашистский («австрофашизм») режим 1932-1934 гг.; убит нацистами; К. Шушниг до аншлюса 1938 г.</p>`,
+                    "Итог: фашизм и нацизм стали формами тоталитарной диктатуры, основанными на насилии, контроле общества и агрессивной внешней политике."
+                )
+            },
+            {
+                id: "b50",
+                category: "ХХ век: мировые войны и кризисы",
+                title: "Билет 50. Вторая мировая война. Этапы и театры. Итоги. Нюрнберг и Токио. Создание ООН",
+                content: compileContent(
+                    "Вторая мировая война уничтожила страны Оси, привела к созданию ООН и сформировала новый мировой порядок с двумя сверхдержавами - США и СССР.",
+                    "1 сентября 1939 г; 22 июня 1941; 7 декабря 1941; 6 июня 1944; 8 мая 1945 г; 2 сентября 1945 г; 26 июня 1945",
+                    "Причины; Первый этап 1939-1941; Глобализация войны; Коренной перелом; Финал войны; Нюрнберг, Токио и ООН",
+                    `<p><strong>• Причины.</strong> Вторая мировая выросла из противоречий Версальской системы, реваншизма Германии, мирового кризиса 1929 г., агрессии Японии и Италии, слабости Лиги Наций и политики умиротворения. Германия стремилась к «жизненному пространству», Япония - к господству в Восточной Азии, Италия - к имперскому престижу. Международная система не смогла остановить агрессоров на раннем этапе.</p>
+                     <p><strong>• Первый этап 1939-1941 гг.</strong> 1 сентября 1939 г. Германия напала на Польшу, начав войну в Европе. Затем последовали «странная война», разгром Франции, оккупация Дании и Норвегии, борьба за Британию и расширение контроля Германии над Европой. На этом этапе страны Оси пользовались преимуществом внезапности, мобилизации и слабости противников.</p>
+                     <p><strong>• Война становится глобальной.</strong> 22 июня 1941 г. Германия напала на СССР, а 7 декабря 1941 г. Япония атаковала Перл-Харбор, после чего в войну вступили США. С этого момента война стала действительно мировой: Восточный фронт, Атлантика, Северная Африка, Тихий океан и Китай оказались частями одного глобального конфликта.</p>
+                     <p><strong>• Коренной перелом 1942-1943 гг.</strong> Перелом сложился на нескольких театрах: Сталинград и Курск остановили и отбросили Германию на Востоке; Эль-Аламейн изменил ситуацию в Северной Африке; Мидуэй остановил японское наступление в Тихом океане. Антигитлеровская коалиция получила стратегическую инициативу.</p>
+                     <p><strong>• Завершение войны.</strong> В 1944 г. союзники открыли второй фронт в Нормандии, а Красная армия освобождала Восточную Европу. Германия капитулировала в мае 1945 г. На Тихом океане США вели войну против Японии; атомные бомбардировки Хиросимы и Нагасаки и вступление СССР в войну против Японии ускорили её капитуляцию 2 сентября 1945 г.</p>
+                     <p><strong>• Итоги, суды и ООН.</strong> Война унесла 60-70 млн жизней, уничтожила страны Оси, ослабила старые европейские империи и усилила США и СССР. Нюрнбергский и Токийский процессы закрепили принцип личной ответственности за военные преступления. ООН была создана как механизм предотвращения новых мировых войн и площадка коллективной безопасности.</p>`,
+                    "Итог: Вторая мировая война уничтожила страны Оси, привела к созданию ООН и сформировала новый мировой порядок с двумя сверхдержавами - США и СССР."
+                )
+            },
+            {
+                id: "b51",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 51. Экономические последствия II Мировой войны. План Маршалла. Бреттон-Вудс. «Социальная экономика». Интеграция и I волна НТР",
+                content: compileContent(
+                    "после Второй мировой войны Запад восстанавливался через долларовую систему, план Маршалла, интеграцию и социальное государство.",
+                    "5 июня 1947 г; 9 мая 1950; 15 августа 1971 г; 1946-1947 гг; 1946-1947; 1948-1952",
+                    "Разрушения и расстановка сил; Бреттон-Вудская конференция; План Маршалла (1948-1952); «Немецкое экономическое чудо»; «Социальное государство» (welfare state); Западноевропейская интеграция",
+                    `<p><strong>• Разрушения и расстановка сил.</strong> Европа - 50 млн погибших и беженцев, разрушена треть жилого фонда и промышленности; «год нуля» (1945); продовольственный, угольный, валютный кризисы 1946-1947 гг. США - на подъёме: 60% мирового промышленного производства, 2/3 мирового золотого запаса; «Великий выигравший». Великобритания истощена, фунт стерлингов теряет позиции. СССР понёс огромные потери, но обладает мощной армией и контролем над Восточной Европой.</p>
+                     <p><strong>• Бреттон-Вудская конференция.</strong> Июль 1944 г. (Бреттон-Вудс, Нью-Гэмпшир, США), 730 делегатов из 44 стран. Две концепции: Дж. М. Кейнс (Великобритания) - наднациональная клиринговая система с расчётной единицей «банкор»; Г. Уайт (США) - система во главе с долларом. Победила позиция США. Решения: установлен курс доллара $35 за тройскую унцию золота; доллар - мировая резервная валюта (привязан к золоту, остальные - к доллару).</p>
+                     <p><strong>• План Маршалла (1948-1952).</strong> Программа европейского восстановления. Госсекретарь США Дж. Маршалл - речь в Гарварде 5 июня 1947 г. Цели: восстановление Европы как платёжеспособного рынка для США, противостояние коммунистическому влиянию, политическая стабилизация. Объём около $13 млрд (~$200 млрд в современных ценах) 16 странам Западной Европы и Турции; основные получатели - Великобритания, Франция, Италия, Западная Германия. Помощь давалась не только деньгами, но и оборудованием, продовольствием, топливом, сырьём; распределение координировала Организация европейского экономического сотрудничества. Последствия: ускоренное восстановление промышленности, стабилизация валют, рост торговли между странами Запада и усиление американского политико-экономического влияния.</p>
+                     <p><strong>• «Немецкое экономическое чудо».</strong> Денежная реформа Л. Эрхарда (июнь 1948) введение немецкой марки; одновременная либерализация цен. Концепция «социальной рыночной экономики» (А. Мюллер-Армак, Л. Эрхард): рынок + социальная справедливость + правовое государство; антимонопольная политика; роль государства как «садовника». Рост ФРГ 1950-х - 8-10% в год.</p>
+                     <p><strong>• «Социальное государство» (welfare state).</strong> Послевоенный консенсус: полная занятость как цель (кейнсианство); широкое социальное страхование; бесплатные или субсидируемые образование и здравоохранение; прогрессивное налогообложение и перераспределение; роль профсоюзов и трипартизма (государство-работодатели-профсоюзы). Великобритания доклад У. Бевериджа 1942 г.; реформы лейбористов К. Эттли (1945-1951) - Национальная служба здравоохранения NHS (1948), национализация ряда отраслей.</p>`,
+                    "Итог: послевоенная экономика Запада восстанавливалась через план Маршалла, долларовую систему, интеграцию и социальное государство."
+                )
+            },
+            {
+                id: "b52",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 52. Геополитические, военные, экономические и идеологические последствия II Мировой. Холодная война. Военные блоки. Берлинский и Карибский кризисы",
+                content: compileContent(
+                    "после Второй мировой войны мир стал биполярным, а противостояние США и СССР оформилось в холодную войну и военные блоки.",
+                    "5 марта 1946; 14 мая 1955; 1 июля 1991 г; 13 августа 1961 г; 9 ноября 1989 г; 14 октября 1962 г",
+                    "Биполярный мир; Этапы холодной войны; Военные блоки; Экономические последствия; Идеологические последствия",
+                    `<p><strong>• Биполярный мир.</strong> Сверхдержавы: США (атомное оружие с 1945, экономическая мощь, доллар, контроль над Зап. Европой и значительной частью Тихоокеанского региона) и СССР (массовая армия, контроль над Вост. Европой, идеология; атомная бомба с 1949). Раскол мира на «западный» и «восточный» лагеря. Третий мир - арена борьбы и поле деколонизации.</p>
+                     <p><strong>• Этапы холодной войны.</strong> 1) 1946-1953 - становление: речь У. Черчилля в Фултоне (5 марта 1946) о «железном занавесе»; доктрина Г. Трумэна (март 1947) о «сдерживании»; план Маршалла; берлинский кризис 1948-1949 гг. (советская блокада Зап. Берлина, англо-американский воздушный мост); образование ФРГ и ГДР (1949); НАТО (4 апр. 1949); провозглашение КНР (1949); атомная бомба у СССР (29 авг. 1949); война в Корее (1950-1953).</p>
+                     <p><strong>• Военные блоки.</strong> НАТО (4 апр. 1949, Вашингтонский договор) изначально 12 государств; коллективная оборона (ст. 5); американское ядерное оружие в Европе. Расширение по ходу холодной войны (1952 - Греция, Турция; 1955 - ФРГ; 1982 - Испания). Организация Варшавского договора (14 мая 1955) в ответ на принятие ФРГ в НАТО; СССР и страны социалистического лагеря (без КНР, Албании после 1968 г., Югославии она не входила); распущен 1 июля 1991 г.</p>
+                     <p><strong>• Берлинский кризис 1961 г.</strong> К 1961 г. через Берлин из ГДР на Запад уехало около 3 млн человек- экономический и демографический кризис ГДР. В ночь на 13 августа 1961 г. возведение Берлинской стены (155 км), сначала из колючей проволоки, затем бетонная. Стена стала символом раздела Европы; стояла до 9 ноября 1989 г.</p>
+                     <p><strong>• Карибский (Кубинский) кризис октября 1962 г.</strong> Кубинская революция 1959 г. (Ф. Кастро) сближение с СССР; попытка интервенции в заливе Свиней (апрель 1961) провалилась; в США размещены ракеты средней дальности «Юпитер» в Турции (1961). Решение Н. С. Хрущёва о размещении на Кубе советских ракет средней дальности Р-12 и Р-14 (операция «Анадырь»). 14 октября 1962 г. обнаружены американским самолётом-разведчиком U-2.</p>`,
+                    "Итог: после Второй мировой войны мир стал биполярным, а холодная война определила международные отношения на десятилетия."
+                )
+            },
+            {
+                id: "b53",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 53. Создание КНР. Мао Цзэдун. «Большой скачок». «Культурная революция»",
+                content: compileContent(
+                    "Мао создал КНР и провёл радикальные кампании, которые укрепляли власть КПК, но привели к тяжёлым последствиям.",
+                    "1 октября 1949 г; 14 февраля 1950; 1953-1957 г; 1959-1961 гг; 1949-1957; 1950-1953",
+                    "Провозглашение КНР; Первое десятилетие 1949-1957; «Большой скачок» 1958-1960; «Культурная революция» 1966-1976",
+                    `<p><strong>• Провозглашение КНР.</strong> 1 октября 1949 г. - Мао Цзэдун с трибуны Тяньаньмэнь провозгласил Китайскую Народную Республику. Чан Кайши с остатками Гоминьдана отступил на Тайвань (Китайская Республика). Тайваньский вопрос нерешён до сих пор. Идеология марксизм-ленинизм-маоизм; концепция «новой демократии» (союз 4 классов: рабочих, крестьян, мелкой буржуазии, национальной буржуазии).</p>
+                     <p><strong>• Первое десятилетие 1949-1957.</strong> Аграрная реформа 1950 г. конфискация и раздел помещичьих земель крестьянам (~300 млн человек получили землю); массовые казни помещиков и «местных тиранов» (1-2 млн жертв). Советско-китайский договор о дружбе, союзе и взаимной помощи (14 февраля 1950); помощь СССР - 156 крупных промышленных объектов. Война в Корее 1950-1953 - китайские «народные добровольцы» (~1 млн чел.), потери ~400 тыс.</p>
+                     <p><strong>• «Большой скачок» 1958-1960.</strong> Лозунги: «Три года упорного труда десять тысяч лет счастья»; «Догнать и перегнать Англию по производству стали за 15 лет». Создание народных коммун (с 1958) на базе слияния колхозов общественные столовые, ясли, обобществление личного имущества. «Битва за сталь» - кустарные домны «в каждом дворе»; миллионы тонн некачественного металла. «Воробьиная кампания» - уничтожение воробьёв как «вредителей» нашествие насекомых, неурожаи.</p>
+                     <p><strong>• «Культурная революция» 1966-1976.</strong> Контрнаступление Мао: реакция на потерю влияния и страх «буржуазного перерождения» КПК (как в СССР после Сталина). 1966 г. - «Решение ЦК КПК о великой пролетарской культурной революции»: «огонь по штабам», «большое потрясение и большой порядок». Орудия Мао - хунвэйбины (молодёжь, «красная гвардия») и цзаофани («бунтари»): разгром партийных и государственных учреждений, погромы интеллигенции, преподавателей, «врагов народа», музеев, храмов, культурного наследия.</p>
+                     <p><strong>• 1976 г. и итоги.</strong> Январь 1976 смерть премьера Чжоу Эньлая; июль Чжу Дэ; 9 сентября Мао Цзэдуна. Октябрь 1976 - арест «банды четырёх». Итоги КР: 1-2 млн жертв, миллионы пострадавших; «потерянное поколение» (вместо школы и вуза лозунги и деревня); разрушение культуры; экономический ущерб. Конец маоистской эпохи; путь к реформам.</p>`,
+                    "Итог: Мао создал коммунистический Китай, но радикальные кампании привели к тяжёлым социальным и экономическим последствиям."
+                )
+            },
+            {
+                id: "b54",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 54. Реформы Дэн Сяопина в Китае",
+                content: compileContent(
+                    "реформы Дэн Сяопина соединили рыночные механизмы с сохранением политической монополии КПК.",
+                    "4 июня 1989 г; 1978-1992 гг; 1979-1983 гг; 1989-1991 гг; 1904-1997; 1978-1992",
+                    "Личность; Принципы; Сельскохозяйственная реформа; Открытость; Промышленная реформа; Ценовая реформа",
+                    `<p><strong>• Личность.</strong> Дэн Сяопин (1904-1997) - ветеран КПК, участник Великого похода, неоднократно репрессирован при Мао (в т. ч. в годы КР), реабилитирован в 1977 г. Никогда не занимал высшего формального поста (не был ни председателем КНР, ни председателем КПК после 1980 г.), но фактически руководил страной как «архитектор реформ» в 1978-1992 гг.</p>
+                     <p><strong>• Поворот 1978 г.</strong> 3-й пленум ЦК КПК 11-го созыва (декабрь 1978) отказ от классовой борьбы как «главного звена», курс «четырёх модернизаций» (сельское хозяйство, промышленность, наука и техника, оборона); реабилитация миллионов жертв КР.</p>
+                     <p><strong>• Принципы.</strong> «Социализм с китайской спецификой». «Не важно, какого цвета кошка, лишь бы она ловила мышей» - прагматизм. «Переходить реку, нащупывая камни» - постепенность, пилотные эксперименты. «Богатеть не предосудительно». Теория начальной стадии социализма (необходимость товарно-денежных отношений). Одновременно «четыре основных принципа» 1979 г. (политические гарантии): социалистический путь, диктатура пролетариата, руководство КПК, марксизм-ленинизм-маоизм.</p>
+                     <p><strong>• Сельскохозяйственная реформа.</strong> Система семейного подряда (баогань даохо) с 1979-1983 гг. Земля остаётся в коллективной собственности, но передаётся в долгосрочную аренду семьям; часть продукции государству по фиксированным ценам, остальное - на рынок. Роспуск народных коммун 1982-1984. Рост сельскохозяйственного производства на 50%+ за первые годы; решение проблемы продовольствия.</p>
+                     <p><strong>• Открытость.</strong> Особые экономические зоны (СЭЗ): 1980 - Шэньчжэнь (рядом с Гонконгом), Чжухай, Шаньтоу, Сямэнь; с 1988 - провинция Хайнань. Льготы иностранному капиталу, экспортная ориентация. Закон о совместных предприятиях 1979 г.; «открытые города» (1984); постепенная либерализация внешней торговли.</p>`,
+                    "Итог: реформы Дэн Сяопина создали модель рыночной экономики при сохранении политической монополии КПК."
+                )
+            },
+            {
+                id: "b55",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 55. Экономика Запада во II пол. ХХ в. Кризис 1973-1975 гг. «Новая экономика» (рейганомика, тэтчеризм)",
+                content: compileContent(
+                    "кризис 1970-х показал пределы послевоенной кейнсианской модели и подтолкнул Запад к рыночному повороту: приватизации, дерегулированию и росту роли финансового сектора.",
+                    "15 августа 1971 г; 25 октября 1973 г; 1971-1973 гг; 1973-1975 гг; 1983-1990 гг; 1984-1985 гг",
+                    "Послевоенный консенсус; Симптомы кризиса; Нефтяной шок; Стагфляция; Неолиберальный поворот; Последствия",
+                    `<p><strong>• Послевоенная модель.</strong> После 1945 г. на Западе сложился послевоенный консенсус: социальное государство, кейнсианское регулирование, высокая занятость, массовое потребление и рост среднего класса. Бреттон-Вудская система фиксированных курсов обеспечивала валютную стабильность, а государство активно сглаживало кризисы спроса.</p>
+                     <p><strong>• Симптомы кризиса.</strong> К концу 1960-х модель стала давать сбои: росли социальные расходы, инфляция, бюджетные нагрузки и конкуренция между индустриальными странами. «Никсоновский шок» 15 августа 1971 г. - отказ США от обмена доллара на золото - подорвал Бреттон-Вудскую систему и привёл к переходу к плавающим курсам.</p>
+                     <p><strong>• Нефтяной шок и кризис 1973-1975 гг.</strong> После войны Судного дня страны ОПЕК резко повысили цены на нефть и применили эмбарго против сторонников Израиля. Рост цен на энергию ударил по производству, транспорту и потреблению. Кризис проявился как стагфляция: одновременно спад, инфляция и безработица.</p>
+                     <p><strong>• Почему старые методы не работали.</strong> Кейнсианское стимулирование спроса помогало при обычном спаде, но в условиях стагфляции оно усиливало инфляцию. Правительства столкнулись с ситуацией, когда прежний рецепт - больше расходов и дешёвые деньги - уже не давал прежнего результата. Это открыло путь пересмотру роли государства.</p>
+                     <p><strong>• Рейганомика и тэтчеризм.</strong> В 1980-е годы произошёл неолиберальный поворот. Рейганомика в США включала снижение налогов, дерегулирование, борьбу с инфляцией и рост военных расходов. Тэтчеризм в Великобритании означал приватизацию, ограничение профсоюзов, сокращение роли государства и жёсткую антиинфляционную политику.</p>
+                     <p><strong>• Последствия и «новая экономика».</strong> Инфляцию удалось снизить, выросли финансовый сектор, сфера услуг, информационные технологии и глобальные рынки капитала. Но появились новые проблемы: рост неравенства, деиндустриализация старых промышленных районов и ослабление части социальных гарантий. Запад перешёл от индустриального консенсуса к более рыночной и технологичной модели.</p>`,
+                    "Итог: кризис 1970-х завершил эпоху послевоенного кейнсианского консенсуса и подтолкнул Запад к рыночному повороту, приватизации и новой технологической экономике."
+                )
+            },
+            {
+                id: "b56",
+                category: "Вторая половина ХХ века и современность",
+                title: "Билет 56. Новые индустриальные страны Азиатско-Тихоокеанского региона. Модель «летящих гусей». Азиатский кризис 1997-1998 гг.",
+                content: compileContent(
+                    "новые индустриальные страны АТР выросли через экспортную индустриализацию, но кризис 1997-1998 годов выявил их финансовую уязвимость.",
+                    "2 июля 1997 г; 17 авг. 1998; 1997-1998 гг; 1960-1970; 1961-1979; 1959-1990",
+                    "Первая и вторая волны НИС; Особенности модели; Модель «летящих гусей»; Достижения; Уроки и последствия",
+                    `<p><strong>• Первая и вторая волны НИС.</strong> «Четыре азиатских тигра» (1-я волна): Республика Корея, Тайвань, Гонконг, Сингапур - стремительный рост с 1960-1970-х гг. (среднегодовой 6-10%). 2-я волна: Малайзия, Таиланд, Индонезия, Филиппины индустриализация с 1980-х гг. Япония локомотив региона; с 1968 г. - 2-я экономика мира (после США), модель для подражания.</p>
+                     <p><strong>• Особенности модели.</strong> Авторитарный модернизирующий режим на ранних этапах (Пак Чонхи в Корее 1961-1979; Чан Цзинго на Тайване; Ли Куан Ю в Сингапуре 1959-1990; Сухарто в Индонезии 1967-1998). Экспортно-ориентированная индустриализация не импортозамещение (как в Латинской Америке), а ставка на завоевание внешних рынков. Сильная роль государства: индустриальная политика, поддержка «национальных чемпионов» (Hyundai, Samsung, LG в Корее), управление кредитом.</p>
+                     <p><strong>• Модель «летящих гусей».</strong> Концепция К. Акамацу (1930-е гг., популяризирована в 1960-1980-е). «Вожак стаи» - Япония последовательно переходит из старых отраслей в новые: текстиль металлургия и судостроение автомобилестроение и бытовая электроника высокие технологии. «Гуси» второго эшелона (НИС-1) принимают переданные Японией отрасли. «Гуси» третьего эшелона (НИС-2) ниже по технологической цепочке.</p>
+                     <p><strong>• Достижения.</strong> Республика Корея - Hyundai, Samsung, LG; одна из лидеров судостроения, металлургии, электроники, автопрома. Тайвань - TSMC, Acer; мировой лидер по производству полупроводников. Сингапур - глобальный финансовый и логистический хаб. «Сеульское чудо», «Тайваньское чудо». Из бедных аграрных стран в развитые индустриальные за одно поколение.</p>
+                     <p><strong>• Азиатский финансовый кризис 1997-1998 гг.</strong> Предпосылки: перегрев экономик к середине 1990-х; массовый приток «горячего» иностранного капитала (краткосрочные кредиты, портфельные инвестиции); высокая внешняя задолженность частного сектора (особенно банков и крупных корпораций); фиксированный курс национальных валют к доллару; слабый банковский надзор; «блатной капитализм» (crony capitalism) - связь правительств и крупного бизнеса.</p>
+                     <p><strong>• Механизм и последствия кризиса.</strong> 2 июля 1997 г. Таиланд отказался защищать фиксированный курс бата, началась резкая девальвация. Инвесторы стали выводить капитал из Индонезии, Малайзии, Южной Кореи и Филиппин; валюты падали, долги в долларах дорожали, банки и корпорации банкротились. МВФ предоставлял кредиты в обмен на сокращение расходов, повышение ставок, закрытие слабых банков и реформу корпоративного управления. Краткосрочно это вызвало спад, безработицу и политические кризисы (в Индонезии пал режим Сухарто). Долгосрочно страны региона усилили валютные резервы, банковский надзор и осторожнее относились к краткосрочным внешним займам.</p>`,
+                    "Итог: новые индустриальные страны АТР добились успеха через экспорт и индустриализацию, но кризис 1997-1998 годов показал уязвимость модели."
+                )
+            },
+            {
+                id: "b57",
+                category: "Новая Россия (1990-е гг.)",
+                title: "Билет 57. Политические реформы 1990-х в России",
+                content: compileContent(
+                    "политические реформы 1990-х создали новую российскую государственность, но сопровождались конфликтом президента и парламента.",
+                    "12 июня 1990 г; 12 июня 1991 г; 25 декабря 1991 г; 25 апреля 1993 г; 21 сентября 1993 г; 12 декабря 1993 г",
+                    "Исходные условия; Конституционные противоречия; Партии и выборы 1990-х; Чеченские войны; Передача власти; Итоги",
+                    `<p><strong>• Исходные условия.</strong> 12 июня 1990 г. Декларация о государственном суверенитете РСФСР; 12 июня 1991 г. - Б. Н. Ельцин избран Президентом РСФСР всенародным голосованием (57%; вице-президент А. В. Руцкой) - впервые в истории России. После августа 1991 г. нарастающее ослабление союзных структур; декабрь 1991 г. распад СССР; 25 декабря 1991 г. - РСФСР переименована в Российскую Федерацию.</p>
+                     <p><strong>• Конституционные противоречия.</strong> Действовала Конституция РСФСР 1978 г. с многочисленными поправками; противоречия между ветвями власти: формально верховным органом был Съезд народных депутатов (1068 чел.) и Верховный Совет (председатель Р. И. Хасбулатов); фактически президент с сильным правительством (Е. Т. Гайдар как и. о. премьера в 1992 г., с дек. 1992 - В. С. Черномырдин).</p>
+                     <p><strong>• Кризис 1992-1993 гг.</strong> Углубляющийся конфликт президента и парламента по поводу экономических реформ и распределения полномочий. Декабрь 1992 - VII Съезд народных депутатов: «нулевой вариант», Ельцин уступил Гайдара. 25 апреля 1993 г. референдум по четырём вопросам (доверие президенту, его социально-экономической политике, досрочные выборы президента, досрочные выборы парламента): результат «да-да-нет-да»; политический импульс президенту.</p>
+                     <p><strong>• Октябрьские события 1993 г.</strong> 21 сентября 1993 г. - Указ Президента № 1400 «О поэтапной конституционной реформе»: роспуск Съезда и Верховного Совета - неконституционно. Конституционный суд (В. Д. Зорькин) признал указ основанием для отрешения; Верховный Совет объявил Ельцина низложенным, А. В. Руцкого - исполняющим обязанности президента. Противостояние в Москве переросло в вооружённый кризис: 3 октября сторонники Верховного Совета попытались захватить мэрию и телецентр Останкино; 4 октября войска по приказу Ельцина обстреляли Белый дом из танков. Верховный Совет был разогнан, лидеры сопротивления арестованы, а новая Конституция 12 декабря 1993 г. закрепила сильную президентскую власть.</p>
+                     <p><strong>• Итоги.</strong> Формально установлены демократические институты: Конституция, парламент, выборы, политические партии, свобода слова и собраний. Сохраняются проблемы: слабость партий и гражданского общества; влияние олигархических групп; силовое решение кризиса 1993 г. как прецедент; региональный сепаратизм (Татарстан, Башкортостан, Чечня); глубокое разочарование общества «демократией», ассоциируемой с экономическими лишениями.</p>`,
+                    "Итог: политические реформы 1990-х создали новую российскую государственность, но сопровождались конфликтом институтов и слабостью власти."
+                )
+            },
+            {
+                id: "b58",
+                category: "Новая Россия (1990-е гг.)",
+                title: "Билет 58. Экономические реформы 1990-х в России",
+                content: compileContent(
+                    "реформы 1990-х перевели Россию к рынку, но сопровождались шоковой терапией, приватизацией, падением уровня жизни и кризисом 1998 года.",
+                    "2 января 1992 г; 3 декабря 1991 г; 11 октября 1994 г; 17 августа 1998 г; 1993-1997 гг; 1999-2000 гг",
+                    "Исходные условия; «Шоковая терапия» Гайдара (ноябрь 1991 декабрь 1992); Приватизация; Падение производства; Итоги десятилетия",
+                    `<p><strong>• Исходные условия.</strong> К концу 1991 г.: тотальный дефицит товаров, гиперинфляция (~25% в месяц в декабре 1991), валютный кризис, развал хозяйственных связей с распадом СССР, внешний долг ~70 млрд долл., золотой запас сократился с 2050 т в 1985 до ~290 т. Радикальные меры неизбежны.</p>
+                     <p><strong>• «Шоковая терапия» Гайдара (ноябрь 1991 декабрь 1992).</strong> Е. Т. Гайдар вице-премьер по экономической политике, фактический глава правительства; ключевые соратники - А. Б. Чубайс, А. Н. Шохин. Основные меры: 1) Либерализация цен 2 января 1992 г. (Указ Ельцина 3 декабря 1991 г.): отпуск 90% розничных и 80% оптовых цен; результат - инфляция за 1992 г. 2509%. 2) Либерализация внешней торговли: разрушение государственной монополии, постепенно свободный экспорт-импорт.</p>
+                     <p><strong>• Социальные последствия 1992 г.</strong> Обесценение вкладов в Сбербанке (около 400 млрд долл. в эквиваленте) - для большинства населения; резкое падение уровня жизни; пенсии и зарплаты на грани выживания; рост смертности (особенно мужской на ~5 лет), снижение рождаемости («русский крест»); массовое явление «коммерсантов», «челноков»; криминализация экономики, рэкет.</p>
+                     <p><strong>• Приватизация.</strong> 1-й этап ваучерная (А. Б. Чубайс, конец 1992 - середина 1994). Каждому гражданину выдан приватизационный чек номиналом 10 тыс. руб. (~$25 в эквиваленте); чеково-инвестиционные фонды (ЧИФы); обмен на акции предприятий. Результат крайне неравномерное распределение собственности; ваучеры скуплены за бесценок; директора и приближённые получили контроль над предприятиями. 2-й этап денежная приватизация (с 1994).</p>
+                     <p><strong>• Итоги десятилетия.</strong> Переход к рыночной экономике формально совершён: частная собственность, свободные цены, конвертируемость рубля, открытость к внешнему миру, частный сектор как основа. Тяжёлая цена: глубокое падение уровня жизни, резкое имущественное расслоение, демографический кризис, деиндустриализация, сырьевая структура экономики, олигархическая собственность. Создана основа для экономического роста 2000-х.</p>`,
+                    "Итог: реформы 1990-х создали рыночную экономику, но сопровождались резким падением уровня жизни, приватизационными конфликтами и кризисом 1998 года."
+                )
+            }
+        ];
+
+        if (window.enhanceTicketsFromDocx) window.enhanceTicketsFromDocx(BOOK_DATA);
+
+        const TERMS = [
+            { term: "Laissez-faire", definition: "Доктрина, согласно которой государственное вмешательство в экономику должно быть минимальным." },
+            { term: "Доктрина Монро", definition: "Декларация США (1823), провозгласившая американский континент закрытым для европейской колонизации." },
+            { term: "Рисорджименто", definition: "Национально-освободительное движение за объединение и возрождение Италии в XIX веке." },
+            { term: "Бреттон-Вудская система", definition: "Международная валютная система (1944 г.), закрепившая доллар США как мировую резервную валюту с привязкой к золоту." },
+            { term: "Модель «летящих гусей»", definition: "Азиатская экономическая модель, где Япония передает технологии странам второго эшелона (НИС), а те — странам третьего." },
+            { term: "Рейганомика", definition: "Неоконсервативная экономическая политика США 1980-х, снижавшая налоги и роль государства в экономике." },
+            { term: "Шоковая терапия", definition: "Комплекс радикальных реформ в РФ (1992 г.) для быстрого перехода к рынку (либерализация цен, приватизация)." },
+            { term: "Ваучерная приватизация", definition: "Первый этап приватизации в РФ, при котором граждане получали чеки для обмена на акции государственных предприятий." }
+        ];
+
+        const QUIZ_QUESTIONS = [
+            {
+                q: "Какой политик заявил, что великие вопросы решаются не речами, а «железом и кровью»?",
+                a: ["Джузеппе Гарибальди", "Отто фон Бисмарк", "Наполеон III", "Авраам Линкольн"],
+                correct: 1,
+                hint: "Эту знаменитую фразу произнес Отто фон Бисмарк, обосновывая силовой путь объединения Германии вокруг Пруссии."
+            },
+            {
+                q: "Что стало главным результатом Гражданской войны в США (1861-1865)?",
+                a: ["Уничтожение индейцев", "Запрет на иммиграцию", "Отмена рабства (XIII поправка)", "Введение золотого стандарта"],
+                correct: 2,
+                hint: "Победа Севера позволила сохранить единство США и полностью отменить рабство."
+            },
+            {
+                q: "Кто был лидером ненасильственного сопротивления британскому правлению в Индии?",
+                a: ["Махатма Ганди", "Сунь Ятсен", "Дэн Сяопин", "Мао Цзэдун"],
+                correct: 0,
+                hint: "Мохандас (Махатма) Ганди разработал тактику сатьяграхи — мирного гражданского неповиновения."
+            },
+            {
+                q: "В каком году в России произошел дефолт и масштабная девальвация рубля?",
+                a: ["1991 г.", "1993 г.", "1998 г.", "2000 г."],
+                correct: 2,
+                hint: "17 августа 1998 года Россия объявила технический дефолт по своим краткосрочным обязательствам (ГКО)."
+            },
+            {
+                q: "Какую экономическую политику проводил Франклин Рузвельт в США для выхода из Великой Депрессии?",
+                a: ["«Новая демократия»", "«Новый курс» (New Deal)", "Рейганомика", "«Справедливый курс»"],
+                correct: 1,
+                hint: "Рузвельт запустил «Новый курс» — программу широкого государственного вмешательства в экономику и общественных работ."
+            }
+        ];
+
+        QUIZ_QUESTIONS.push(...(window.DOCX_QUIZ_QUESTIONS || []));
+
+        let bookmarks = JSON.parse(localStorage.getItem('hist_bookmarks_rus_part3')) || [];
+        let readSections = JSON.parse(localStorage.getItem('hist_read_rus_part3')) || [];
+
+        function initApp() {
+            syncThemeIcons();
+            renderTOC();
+            renderBookmarks();
+            updateProgress();
+            // Загружаем первый билет по умолчанию
+            if (Array.isArray(BOOK_DATA) && BOOK_DATA.length) selectTopic(BOOK_DATA[0].id);
+        }
+
+        function syncThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const iconDark = document.getElementById('theme-icon-dark');
+            const iconLight = document.getElementById('theme-icon-light');
+            if (iconDark) iconDark.classList.toggle('hidden', !isDark);
+            if (iconLight) iconLight.classList.toggle('hidden', isDark);
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('hist_theme', isDark ? 'dark' : 'light'); } catch (error) { /* приватный режим */ }
+            syncThemeIcons();
+        }
+
+        const MODE_BUTTON_INACTIVE = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50";
+        const MODE_BUTTON_ACTIVE = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-200";
+
+        function switchMode(mode) {
+            ['read', 'cards', 'quiz'].forEach(m => {
+                const view = document.getElementById(`view-${m}`);
+                const button = document.getElementById(`btn-mode-${m}`);
+                if (view) view.classList.add('hidden');
+                if (button) button.className = MODE_BUTTON_INACTIVE;
+            });
+
+            const activeView = document.getElementById(`view-${mode}`);
+            if (!activeView) return;
+            activeView.classList.remove('hidden');
+            const activeButton = document.getElementById(`btn-mode-${mode}`);
+            if (activeButton) activeButton.className = MODE_BUTTON_ACTIVE;
+
+            const sidebar = document.getElementById('sidebar-toc');
+            if (sidebar) sidebar.classList.toggle('hidden', mode !== 'read');
+
+            if (mode === 'cards') renderCards();
+            if (mode === 'quiz') startQuiz();
+        }
+
+        function renderTOC(dataList = BOOK_DATA) {
+            const container = document.getElementById('toc-container');
+            
+            const categories = {};
+            dataList.forEach(item => {
+                if (!categories[item.category]) categories[item.category] = [];
+                categories[item.category].push(item);
+            });
+
+            const categoryColors = {
+                "Мировая история XIX - начала ХХ века": "text-amber-900/70 dark:text-amber-300",
+                "ХХ век: мировые войны и кризисы": "text-rose-900/70 dark:text-rose-300",
+                "Вторая половина ХХ века и современность": "text-teal-900/70 dark:text-teal-300",
+                "Новая Россия (1990-е гг.)": "text-indigo-900/70 dark:text-indigo-300"
+            };
+
+            container.innerHTML = Object.keys(categories).map(catName => `
+                <div class="space-y-1">
+                    <span class="text-xs font-bold ${categoryColors[catName] || 'text-slate-500'} block pt-2">${catName}</span>
+                    ${categories[catName].map(item => `
+                        <button onclick="selectTopic('${item.id}')" class="w-full text-left pl-2 py-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex justify-between items-center group">
+                            <span class="truncate pr-2 text-xs">${item.title.split('.')[0]}. ${item.title.split('.')[1]}</span>
+                            ${readSections.includes(item.id) ? `<svg class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>` : ''}
+                        </button>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function selectTopic(id) {
+            const topic = BOOK_DATA.find(t => t.id === id);
+            if (!topic) return;
+
+            switchMode('read');
+            
+            document.getElementById('header-category').innerText = topic.category;
+            document.getElementById('header-title').innerText = topic.title;
+            
+            const isBookmarked = bookmarks.some(b => b.id === id);
+            const isRead = readSections.includes(id);
+            const currentIndex = BOOK_DATA.findIndex(t => t.id === id);
+            const prevTopic = currentIndex > 0 ? BOOK_DATA[currentIndex - 1] : null;
+            const nextTopic = currentIndex < BOOK_DATA.length - 1 ? BOOK_DATA[currentIndex + 1] : null;
+            const navButton = (target, label, direction) => target
+                ? `<button onclick="selectTopic('${target.id}')" class="flex min-w-0 flex-1 items-center ${direction === 'right' ? 'justify-end text-right' : 'justify-start text-left'} gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:text-indigo-300">
+                        ${direction === 'left' ? '<span class="text-lg">&larr;</span>' : ''}
+                        <span class="min-w-0">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">${label}</span>
+                            <span class="block truncate">${target.title}</span>
+                        </span>
+                        ${direction === 'right' ? '<span class="text-lg">&rarr;</span>' : ''}
+                    </button>`
+                : `<button disabled class="flex min-w-0 flex-1 items-center ${direction === 'right' ? 'justify-end text-right' : 'justify-start text-left'} gap-2 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-300 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-600">
+                        ${direction === 'left' ? '<span class="text-lg">&larr;</span>' : ''}
+                        <span class="min-w-0">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider">${label}</span>
+                            <span class="block truncate">Нет билета</span>
+                        </span>
+                        ${direction === 'right' ? '<span class="text-lg">&rarr;</span>' : ''}
+                    </button>`;
+
+            let bookmarkBtn = `<button onclick="toggleBookmark('${topic.id}', '${topic.title.replace(/'/g, "\\'")}')" class="p-1.5 transition-colors ${isBookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'}" title="В закладки"><svg class="w-6 h-6" ${isBookmarked ? 'fill="currentColor"' : 'fill="none"'} stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></button>`;
+            
+            let readBtn = `<button onclick="markAsRead('${topic.id}')" class="p-1.5 transition-colors ${isRead ? 'text-emerald-500' : 'text-slate-400 hover:text-emerald-500'}" title="Отметить как изученное"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>`;
+
+            document.getElementById('article-body').innerHTML = `
+                <div class="absolute right-6 top-6 flex space-x-2 bg-white dark:bg-slate-800 rounded-lg p-1 shadow-sm border border-slate-100 dark:border-slate-700">
+                    ${bookmarkBtn}
+                    ${readBtn}
+                </div>
+                ${topic.content}
+                <div class="mt-8 grid gap-3 border-t border-slate-100 pt-5 dark:border-slate-700 sm:grid-cols-2">
+                    ${navButton(prevTopic, 'Прошлый билет', 'left')}
+                    ${navButton(nextTopic, 'Следующий билет', 'right')}
+                </div>
+            `;
+            
+            renderTOC();
+        }
+
+        function renderBookmarks() {
+            const container = document.getElementById('bookmarks-container');
+            if (bookmarks.length === 0) {
+                container.innerHTML = `<p class="italic text-center py-2 text-xs">Закладок пока нет. Нажимайте на флажок в билетах.</p>`;
+                return;
+            }
+
+            container.innerHTML = bookmarks.map(b => `
+                <div class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-750 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
+                    <button onclick="selectTopic('${b.id}')" class="font-medium text-left truncate max-w-[160px] text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs">${b.title.split('.')[1] || b.title}</button>
+                    <button onclick="toggleBookmark('${b.id}', '${b.title.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-700">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleBookmark(id, title) {
+            const index = bookmarks.findIndex(b => b.id === id);
+            if (index === -1) {
+                bookmarks.push({ id, title });
+                showToast("Билет добавлен в избранное!");
+            } else {
+                bookmarks.splice(index, 1);
+                showToast("Билет удален из избранного");
+            }
+            localStorage.setItem('hist_bookmarks_rus_part3', JSON.stringify(bookmarks));
+            renderBookmarks();
+            const currentArticleId = BOOK_DATA.find(t => document.getElementById('header-title').innerText.includes(t.title))?.id;
+            if(currentArticleId === id) selectTopic(id);
+        }
+
+        function markAsRead(id) {
+            const index = readSections.indexOf(id);
+            if (index === -1) {
+                readSections.push(id);
+                showToast("Билет отмечен как изученный!");
+            } else {
+                readSections.splice(index, 1);
+                showToast("Метка изучения снята");
+            }
+            localStorage.setItem('hist_read_rus_part3', JSON.stringify(readSections));
+            updateProgress();
+            const currentArticleId = BOOK_DATA.find(t => document.getElementById('header-title').innerText.includes(t.title))?.id;
+            if(currentArticleId === id) selectTopic(id);
+        }
+
+        function updateProgress() {
+            const total = BOOK_DATA.length;
+            const progress = total ? Math.round((readSections.length / total) * 100) : 0;
+            const text = document.getElementById('read-progress-text');
+            if (text) text.innerText = `${progress}%`;
+            if (window.animateStudyProgress) {
+                // animations.js сам обновляет обе полосы (десктоп и мобильную).
+                window.animateStudyProgress(progress);
+                return;
+            }
+            const bar = document.getElementById('read-progress-bar');
+            const barM = document.getElementById('read-progress-bar-m');
+            const textM = document.getElementById('read-progress-text-m');
+            if (bar) bar.style.width = `${progress}%`;
+            if (barM) barM.style.width = `${progress}%`;
+            if (textM) textM.innerText = `${progress}%`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 right-5 z-50 bg-indigo-950 text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all opacity-0 translate-y-2";
+            toast.innerHTML = `
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path></svg>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-2'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function handleSearch(query) {
+            query = query.toLowerCase();
+            const filtered = BOOK_DATA.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.content.toLowerCase().includes(query)
+            );
+            renderTOC(filtered);
+        }
+
+        const CARD_TYPE_META = {
+            all: { label: 'Все', badge: 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' },
+            date: { label: 'Дата', badge: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200' },
+            person: { label: 'Личность', badge: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200' },
+            reform: { label: 'Реформа', badge: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-200' },
+            event: { label: 'Событие', badge: 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-200' },
+            term: { label: 'Термин', badge: 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-200' }
+        };
+        const ALL_CARDS = [
+            ...(typeof CARD_DATA !== 'undefined' && Array.isArray(CARD_DATA)
+                ? CARD_DATA
+                : TERMS.map((item, index) => ({ id: `term-${index}`, type: 'term', period: 'Ключевые понятия', front: item.term, back: item.definition, ticket: 'Материалы сайта', tags: [item.term] }))),
+            ...(window.DOCX_DERIVED_CARDS || [])
+        ];
+        let activeCardType = 'all';
+        let activeCardQuery = '';
+
+        function escapeHTML(value) {
+            return String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        }
+
+        function textMatches(value, query) {
+            return String(value || '').toLowerCase().includes(query);
+        }
+
+        function filteredCards() {
+            const query = activeCardQuery.trim().toLowerCase();
+            return ALL_CARDS.map((card, index) => ({ card, index })).filter(({ card }) => {
+                const typeMatch = activeCardType === 'all' || card.type === activeCardType;
+                const queryMatch = !query || textMatches(card.front, query) || textMatches(card.back, query) || textMatches(card.period, query) || textMatches(card.ticket, query) || (card.tags || []).some(tag => textMatches(tag, query));
+                return typeMatch && queryMatch;
+            });
+        }
+
+        function renderCardFilters() {
+            const container = document.getElementById('card-type-filters');
+            if (!container) return;
+            container.innerHTML = ['all', 'date', 'person', 'reform', 'event', 'term'].map(type => {
+                const meta = CARD_TYPE_META[type];
+                const count = type === 'all' ? ALL_CARDS.length : ALL_CARDS.filter(card => card.type === type).length;
+                const active = activeCardType === type;
+                return `<button type="button" onclick="setCardType('${type}')" class="rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'}">${meta.label} <span class="opacity-60">${count}</span></button>`;
+            }).join('');
+        }
+
+        function setCardType(type) {
+            activeCardType = CARD_TYPE_META[type] ? type : 'all';
+            renderCards();
+        }
+
+        function renderCards() {
+            renderCardFilters();
+            const search = document.getElementById('card-search');
+            if (search && !search.dataset.bound) {
+                search.dataset.bound = 'true';
+                let cardSearchTimer = 0;
+                search.addEventListener('input', event => {
+                    activeCardQuery = event.target.value;
+                    // Дебаунс: полная перерисовка сетки карточек на каждый символ фризила ввод.
+                    window.clearTimeout(cardSearchTimer);
+                    cardSearchTimer = window.setTimeout(renderCards, 160);
+                });
+            }
+            const cards = filteredCards();
+            const summary = document.getElementById('card-summary');
+            if (summary) summary.textContent = `${cards.length} из ${ALL_CARDS.length} · ${CARD_TYPE_META[activeCardType].label}`;
+            const container = document.getElementById('cards-container');
+            if (!container) return;
+            const token = ++cardRenderToken;
+            if (!cards.length) {
+                container.innerHTML = '<div class="md:col-span-2 rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-900">Карточки не найдены.</div>';
+                return;
+            }
+            // Порционный рендер: синхронная отрисовка всей колоды (300+ карточек)
+            // фризила открытие вкладки. Первая порция — сразу, остальное — в фоне.
+            container.innerHTML = cards.slice(0, CARD_RENDER_CHUNK).map(cardHTML).join('');
+            if (cards.length <= CARD_RENDER_CHUNK) return;
+            let offset = CARD_RENDER_CHUNK;
+            const appendChunk = () => {
+                if (token !== cardRenderToken || !container.isConnected) return;
+                const before = container.children.length;
+                const slice = cards.slice(offset, offset + CARD_RENDER_CHUNK);
+                offset += slice.length;
+                container.insertAdjacentHTML('beforeend', slice.map(cardHTML).join(''));
+                // Тот же GSAP-каскад, что при открытии вкладки (animations.js).
+                if (window.codexRevealCards) window.codexRevealCards([...container.children].slice(before));
+                if (offset < cards.length) scheduleCardChunk(appendChunk);
+            };
+            scheduleCardChunk(appendChunk);
+        }
+
+        const CARD_RENDER_CHUNK = 24;
+        // Токен «актуальности»: новый renderCards обесценивает фоновые дорисовки старого.
+        let cardRenderToken = 0;
+
+        function scheduleCardChunk(callback) {
+            if (typeof requestIdleCallback !== 'undefined') requestIdleCallback(callback, { timeout: 500 });
+            else window.setTimeout(callback, 40);
+        }
+
+        function cardHTML({ card, index }) {
+            const meta = CARD_TYPE_META[card.type] || CARD_TYPE_META.term;
+            const tags = (card.tags || []).slice(0, 3);
+            return `
+                <div class="perspective-1000 w-full h-64 cursor-pointer" onclick="flipCard(${index})">
+                    <div id="card-${index}" class="preserve-3d duration-500 w-full h-full relative">
+                        <div class="backface-hidden absolute w-full h-full bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-wider ${meta.badge}">${meta.label}</span>
+                                <span class="text-right text-[11px] font-bold uppercase tracking-wider text-slate-400">${escapeHTML(card.period)}</span>
+                            </div>
+                            <h3 class="text-lg font-serif font-bold text-slate-900 dark:text-white my-auto text-center leading-tight">${escapeHTML(card.front)}</h3>
+                            <span class="text-xs text-slate-400 text-center">Нажмите, чтобы перевернуть</span>
+                        </div>
+                        <div class="rotate-y-180 backface-hidden absolute w-full h-full bg-indigo-950 text-white p-6 rounded-2xl shadow-md flex flex-col justify-between">
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-indigo-950">${meta.label}</span>
+                                <span class="text-right text-[11px] font-bold uppercase tracking-wider text-indigo-200">${escapeHTML(card.ticket)}</span>
+                            </div>
+                            <p class="text-sm text-indigo-100 my-auto text-center font-medium leading-relaxed">${escapeHTML(card.back)}</p>
+                            <div class="flex flex-wrap justify-center gap-1.5">${tags.map(tag => `<span class="rounded-full bg-white/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider">${escapeHTML(tag)}</span>`).join('')}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function flipCard(idx) {
+            document.getElementById(`card-${idx}`).classList.toggle('rotate-y-180');
+        }
+
+        let currentQuestionIdx = 0;
+        let correctAnswersCount = 0;
+        let answeredQuestionsCount = 0;
+
+        function startQuiz() {
+            currentQuestionIdx = 0;
+            correctAnswersCount = 0;
+            answeredQuestionsCount = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+            if (!q) return;
+            document.getElementById('quiz-question-number').innerText = `Вопрос ${currentQuestionIdx + 1} из ${QUIZ_QUESTIONS.length}`;
+            document.getElementById('quiz-score').innerText = `Правильно: ${correctAnswersCount} / ${answeredQuestionsCount}`;
+            document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIdx + 1) / QUIZ_QUESTIONS.length) * 100}%`;
+            document.getElementById('quiz-question-text').innerText = q.q;
+
+            const answersContainer = document.getElementById('quiz-answers-container');
+            answersContainer.innerHTML = q.a.map((option, idx) => `
+                <button onclick="checkAnswer(${idx})" class="quiz-option-btn w-full text-left px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-700 font-medium transition-all text-sm text-slate-700 dark:text-slate-300">${option}</button>
+            `).join('');
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('btn-next-question').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIdx) {
+            const q = QUIZ_QUESTIONS[currentQuestionIdx];
+            const optionButtons = document.querySelectorAll('.quiz-option-btn');
+            
+            optionButtons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.className = "w-full text-left px-5 py-3 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-200 font-semibold transition-all text-sm";
+                } else if (idx === selectedIdx) {
+                    btn.className = "w-full text-left px-5 py-3 rounded-xl border border-rose-500 bg-rose-50 text-rose-900 dark:bg-rose-950/20 dark:text-rose-200 font-semibold transition-all text-sm";
+                }
+            });
+
+            answeredQuestionsCount++;
+            if (selectedIdx === q.correct) {
+                correctAnswersCount++;
+                document.getElementById('quiz-feedback').className = "p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/10 text-slate-700 dark:text-slate-300 text-sm";
+                document.getElementById('quiz-feedback').innerHTML = `<strong>Верно!</strong> <br>${q.hint}`;
+            } else {
+                document.getElementById('quiz-feedback').className = "p-4 rounded-xl border border-rose-200 bg-rose-50/50 dark:bg-rose-950/10 text-slate-700 dark:text-slate-300 text-sm";
+                document.getElementById('quiz-feedback').innerHTML = `<strong>Ошибка!</strong> <br>${q.hint}`;
+            }
+
+            document.getElementById('quiz-score').innerText = `Правильно: ${correctAnswersCount} / ${answeredQuestionsCount}`;
+            document.getElementById('quiz-feedback').classList.remove('hidden');
+            document.getElementById('btn-next-question').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < QUIZ_QUESTIONS.length) {
+                showQuestion();
+            } else {
+                document.getElementById('quiz-question-text').innerText = "Тестирование завершено!";
+                document.getElementById('quiz-answers-container').innerHTML = `
+                    <div class="text-center py-6 space-y-4">
+                        <p class="text-xl font-bold text-slate-900 dark:text-white">Ваш результат: ${correctAnswersCount} из ${QUIZ_QUESTIONS.length} (${Math.round((correctAnswersCount/QUIZ_QUESTIONS.length)*100)}%)</p>
+                        <button onclick="startQuiz()" class="px-6 py-2.5 bg-indigo-900 hover:bg-indigo-800 text-white font-semibold rounded-xl shadow">Начать заново</button>
+                    </div>
+                `;
+                document.getElementById('quiz-feedback').classList.add('hidden');
+                document.getElementById('btn-next-question').classList.add('hidden');
+            }
+        }
+
+        // addEventListener вместо window.onload — не затирает чужие обработчики load.
+        window.addEventListener('load', initApp, { once: true });
+    </script>
+    <script src="./codex-premium-ui.js?v=20260705-r3"></script>
+</div>
+</body>
+</html>
